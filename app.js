@@ -7,6 +7,7 @@ var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 var mongoose = require('mongoose');
 mongoose.connect(process.env.DB_CONN_CLOUDLOGR); // database on mlab via environment variable
+
 // EWON_DEV_ID  ...eWON environment variables
 // EWON_ACCOUNT
 // EWON_USER_ID

@@ -5,6 +5,8 @@ var router = express.Router();
 module.exports = router;
 var Schedule = require('../models/schedule');
 var request = require('request');
+var parse = require('csv-parse');
+var babyparse = require('babyparse');
 
 router.get('/', function(request, response) { // a get to /tank
   Schedule.findOne( { user: 'Jason' }, function(err, schedule){
@@ -18,9 +20,7 @@ router.get('/', function(request, response) { // a get to /tank
   });
 });
 
-router.get('/apitest', function(req, res, next) {
-  // var eWONSessionID = null;
-  var m2webServer = null;
+router.get('/value', function(req, res, next) {
   request('https://m2web.talk2m.com/t2mapi/login?' + // login to get t2msession
     't2maccount=' + process.env.EWON_ACCOUNT +
     '&t2musername=' + process.env.EWON_USER_ID +
@@ -30,7 +30,7 @@ router.get('/apitest', function(req, res, next) {
         var bodyJson = JSON.parse(body);
         var eWONSessionID = bodyJson.t2msession; // save the session ID
         request('https://m2web.talk2m.com/t2mapi/get/sample/rcgi.bin/ParamForm?' + // get tags
-          'AST_Param=$dtIV$ftT' +  // hard coded 'verb' could be a parameter instead to reuse
+          'AST_Param=$dtIV$ftT' +
           '&t2maccount=' + process.env.EWON_ACCOUNT +
           '&t2musername=' + process.env.EWON_USER_ID +
           '&t2mpassword=' + process.env.EWON_USER_PASSWORD +
@@ -39,28 +39,37 @@ router.get('/apitest', function(req, res, next) {
           '&t2mdevicepassword=' + process.env.EWON_DEVICE_PASSWORD +
           '&t2msession=' + eWONSessionID, function (error, response, body) {
             if (!error && response.statusCode == 200) { // if no error
-              console.log('get tags response: ' + body);
-              bodyJson = JSON.parse(body);
-              console.log('get tags response JSON: ' + bodyJson);
-              // m2webServer = bodyJson.ewon.m2webServer; // save the tag
+              parse(body, {delimiter: ';'}, function(err, output){
+                var value = output[3][2];
+                console.log('get tags response parse: ' + output);
+                console.log('tags response value: ' + value);
+                request('https://m2web.talk2m.com/t2mapi/logout?' + // log out routine
+                  'name=sample' + // hard-coded variable should come from database
+                  '&t2mdeveloperid=' + process.env.EWON_DEV_ID +
+                  '&t2msession=' + eWONSessionID, function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                      return;
+                    }else{
+                      console.log('logout error: ' + error);
+                      console.log('logout error: response: ' + response);
+                      console.log('logout error: body: ' + body);
+                    }
+                });
+              });
             }else{
               console.log('get tags error: ' + error);
-              console.log('get tags error response: ' + response);
-              console.log('get tags error body: ' + body);
+              console.log('get tags error: response: ' + response);
+              console.log('get tags error: body: ' + body);
             }
         });
-      }else{console.log('login error: ' + error);}
-    })
+      }else{
+        console.log('login error: ' + error);
+        console.log('login error: response: ' + response);
+        console.log('login error: body: ' + body);
+      }
+  });
+
 });
-// // log in to get an ID:  https://m2web.talk2m.com/t2mapi/login?t2maccount=ewonusa&t2musername=jasonhorine&t2mpassword=MyPassword_99&t2mdeveloperid=F61488F2-F387-0242-9A1D-9390C27211E1
-// // response:  {"t2msession":"7a5459904a1e1c85a2d2b914659b95ef","success":true}
-
-// // get ewon 'sample': https://m2web.talk2m.com/t2mapi/getewon?name=sample&t2mdeveloperid=F61488F2-F387-0242-9A1D-9390C27211E1&t2msession=d1365c000e461148b23eec5bb5ba4dd4
-// // response: {"ewon":{"id":255685,"name":"sample","encodedName":"sample","status":"online","description":"","customAttributes":["","",""],"m2webServer":"us1.m2web.talk2m.com","lanDevices":[],"ewonServices":[]},"success":true}
-
-// // get all tags: https://m2web.talk2m.com/t2mapi/get/sample/rcgi.bin/ParamForm?AST_Param=$dtIV$ftT&t2maccount=ewonusa&t2musername=jasonhorine&t2mpassword=MyPassword_99&t2mdeveloperid=F61488F2-F387-0242-9A1D-9390C27211E1&t2mdeviceusername=jason&t2mdevicepassword=jason&t2msession=ba0776c7b1b95fa6d2080c3fc9917763
-
-// // returns: "TagId";"TagName";"Value";"AlStatus";"AlType";"Quality" 1;"Max";100;0;0;65472 2;"Min";0;0;0;65472 3;"Level";40;0;0;65472 4;"Running";1;0;0;65472 5;"Input_valve";0;0;0;65472 6;"Outlet_valve";0;0;0;65472
 
 // // process.env.EWON_DEV_ID  ...eWON environment variables
 // // process.env.EWON_ACCOUNT
@@ -135,16 +144,18 @@ router.get('/apitest', function(req, res, next) {
 // })
 
 
-//   //----------------------------------------------//
-//   //  the object to instanciate for the Schedule: //
-//   //----------------------------------------------//
-// function PollData(user, dataAddress){  //constructor for GetData objects <2147483648
-//   // get all the config variables from the DB and assign to the instance
-//   this = Schedule.findOne({ user: user, dataAddress: dataAddress },,{ user email dataAddress dataTagname dataPollRate dataPollingState });
-//   this.timerID = null;
-//   this.inputOne = false;
-//   this.inputONe = false;
-// }
+  //----------------------------------------------//
+  //  the object to instanciate for the Schedule: //
+  //----------------------------------------------//
+function PollData(user, dataAddress){  //constructor for GetData objects <2147483648
+  // get all the config variables from the DB and assign to the instance
+  var dbRetrieve = Schedule.findOne({ user: user, dataAddress: dataAddress },
+    { user: 1, dataTagname: 1, dataPollRate: 1, dataPollingState: 1, });
+  this.user = dbRetrieve.user;
+  this.dataTagname = dbRetrieve.dataTagname;
+  this.dataPollRate = dbRetrieve.dataPollRate;
+  this.dataPollingState = dbRetrieve.dataPollingState;
+};
 // // call to start polling eWON
 // PollData.prototype.startPolling = function(){
 //   this.dataPollingState = true; // keeping track of the status of the object
