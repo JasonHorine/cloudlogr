@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>CloudLogr</title>
+  <style>
+    table, th, td {
+        border: 1px solid black;
+        padding: 4px;
+        text-align: center;
+    }
+    button.button_poll {
+      position: relative;
+      top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to CloudLogr</h1>
+  <button class="button_poll" type="">Poll: <%= schedule.dataPollRate %>ms</button>
+  <table class="tank_table">
+    <caption><h3><%= schedule.dataTagname %></h3></caption>
+    <thead>
+      <tr>
+        <th colspan="" rowspan="" headers="" scope="">Value</th>
+        <th colspan="" rowspan="" headers="" scope="">Timestamp</th>
+        <th colspan="" rowspan="" headers="" scope="">Read Status</th>
+        <th colspan="" rowspan="" headers="" scope="">Error Message</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% schedule.data = schedule.data.reverse(); %><!--want newest first to rendering table-->
+      <% schedule.data.forEach(function(dataEntry){ %> <!-- build the table from data -->
+       <tr>
+        <td colspan="" rowspan="" headers=""><%= dataEntry.value %></td>
+        <td colspan="" rowspan="" headers=""><%= dataEntry.timestamp %></td>
+        <td colspan="" rowspan="" headers=""><%= dataEntry.status ? 'good' : dataEntry.statusCode %></td>
+        <td colspan="" rowspan="" headers=""><%= dataEntry.eWONMessage %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <h4>Entire Schedule Object:</h4>
+  <p><%= schedule %></p>
+  <h4>header:</h4>
+  <p><%= header %></p>
+
+  <div class="container">
+    <h2>data</h2>
+  </div>
+  <!-- for socket io -->
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
+
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+    var socket = io();
+    socket.on('connect', function() {
+    console.log('Connected on front end.');
+});
+  </script>
+</body>
+</html>
