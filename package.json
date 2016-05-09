@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "(crude data logger calling eWON API for data)",
   "main": "index.js",
+  "engines": {
+    "node": "4.3.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,8 +25,5 @@
     "mongoose": "^4.4.14",
     "request": "^2.72.0",
     "socket.io": "^1.4.6"
-  }
-  "engines": {
-    "node": "4.1.1"
   }
 }
