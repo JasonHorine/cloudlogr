@@ -8,19 +8,19 @@ var request = require('request');
 var parse = require('csv-parse');
 var babyparse = require('babyparse');
 
-router.get('/', function(request, response) { // a get to /tank
-  Schedule.findOne( { user: 'Jason' }, function(err, schedule){
-    if (err) response.send('could not find user: Jason.  Error: ' + err);
-    else{
-      // response.send('the schedule is: ' + schedule); works
-      // response.render('tank', [ {schedule: "I'm schedule"}, {header: "I'm header"} ]);
-      response.render('tank', { schedule: schedule, header: "I'm header" });
-      // render tank.ejs, send entire schedule data
-    };
-  });
-});
+// router.get('/', function(request, response) { // a get to /tank
+//   Schedule.findOne( { user: 'Jason' }, function(err, schedule){
+//     if (err) response.send('could not find user: Jason.  Error: ' + err);
+//     else{
+//       // response.send('the schedule is: ' + schedule); works
+//       // response.render('tank', [ {schedule: "I'm schedule"}, {header: "I'm header"} ]);
+//       response.render('tank', { schedule: schedule, header: "I'm header" });
+//       // render tank.ejs, send entire schedule data
+//     };
+//   });
+// });
 
-router.get('/value', function(req, res, next) {
+router.get('/', function(req, res, next) {
   request('https://m2web.talk2m.com/t2mapi/login?' + // login to get t2msession
     't2maccount=' + process.env.EWON_ACCOUNT +
     '&t2musername=' + process.env.EWON_USER_ID +
@@ -41,14 +41,28 @@ router.get('/value', function(req, res, next) {
             if (!error && response.statusCode == 200) { // if no error
               parse(body, {delimiter: ';'}, function(err, output){
                 var value = output[3][2];
-                console.log('get tags response parse: ' + output);
-                console.log('tags response value: ' + value);
+                // console.log('get tags response parse: ' + output);
+                // console.log('tags response value: ' + value);
                 request('https://m2web.talk2m.com/t2mapi/logout?' + // log out routine
-                  'name=sample' + // hard-coded variable should come from database
+                  'name=sample' + // hard-coded variabsle, should come from database
                   '&t2mdeveloperid=' + process.env.EWON_DEV_ID +
                   '&t2msession=' + eWONSessionID, function (error, response, body) {
-                    if (!error && response.statusCode == 200) {
-                      return;
+                    if (!error && response.statusCode == 200) { // if log out good,
+                      var clock = new Date();
+                      Schedule.findOneAndUpdate( { user: 'Jason' }, { $push: { data: {
+                        value: value,
+                        timestamp: clock,
+                        status: true,
+                        statusCode: 200,
+                        eWONMessage: null
+                      }}}, function(err, schedule){ // after write, database returns schedule
+                        if (err) response.send('could not find user: Jason.  Error: ' + err);
+                        else{
+                          // response.send('the schedule is: ' + schedule); works
+                          res.render('tank', { schedule: schedule });
+                        };
+                      });
+
                     }else{
                       console.log('logout error: ' + error);
                       console.log('logout error: response: ' + response);
@@ -68,8 +82,9 @@ router.get('/value', function(req, res, next) {
         console.log('login error: body: ' + body);
       }
   });
-
 });
+
+
 
 // // process.env.EWON_DEV_ID  ...eWON environment variables
 // // process.env.EWON_ACCOUNT
@@ -145,17 +160,26 @@ router.get('/value', function(req, res, next) {
 
 
   //----------------------------------------------//
-  //  the object to instanciate for the Schedule: //
+  //  the object to instantiate for the Schedule: //
   //----------------------------------------------//
-function PollData(user, dataAddress){  //constructor for GetData objects <2147483648
-  // get all the config variables from the DB and assign to the instance
-  var dbRetrieve = Schedule.findOne({ user: user, dataAddress: dataAddress },
-    { user: 1, dataTagname: 1, dataPollRate: 1, dataPollingState: 1, });
-  this.user = dbRetrieve.user;
-  this.dataTagname = dbRetrieve.dataTagname;
-  this.dataPollRate = dbRetrieve.dataPollRate;
-  this.dataPollingState = dbRetrieve.dataPollingState;
-};
+// function buildABear(user, dataAddress){
+//   Schedule.findOne({ user: user, dataAddress: dataAddress },
+//     { user: 1, dataTagname: 1, dataPollRate: 1, dataPollingState: 1, }, function(err, schedule){
+//       var schedule = new PollData(schedule);
+//     }
+// }
+
+// function PollData(schedule){  //constructor for GetData objects <2147483648
+//   // get all the config variables from the DB and assign to the instance
+//   var dbRetrieve = Schedule.findOne({ user: user, dataAddress: dataAddress },
+//     { user: 1, dataTagname: 1, dataPollRate: 1, dataPollingState: 1, });
+
+
+//   this.user = dbRetrieve.user;
+//   this.dataTagname = dbRetrieve.dataTagname;
+//   this.dataPollRate = dbRetrieve.dataPollRate;
+//   this.dataPollingState = dbRetrieve.dataPollingState;
+// };
 // // call to start polling eWON
 // PollData.prototype.startPolling = function(){
 //   this.dataPollingState = true; // keeping track of the status of the object

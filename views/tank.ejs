@@ -3,20 +3,29 @@
 <head>
   <title>CloudLogr</title>
   <style>
+    body {
+      background-image: url("http://www.3-dlinelocating.com/wp-content/uploads/2016/02/Tank-Farm-Photo.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      text-align: center;
+    }
     table, th, td {
-        border: 1px solid black;
+        border: 2px solid black;
         padding: 4px;
         text-align: center;
+        background: #efefef;
+        margin: 0 auto;
     }
     button.button_poll {
       position: relative;
       top: 50px;
+      left: -253px;
     }
   </style>
 </head>
 <body>
   <h1>Welcome to CloudLogr</h1>
-  <button class="button_poll" type="">Poll: <%= schedule.dataPollRate %>ms</button>
+  <!-- <button class="button_poll" type="">Poll: <%= schedule.dataPollRate %>ms</button> -->
   <table class="tank_table">
     <caption><h3><%= schedule.dataTagname %></h3></caption>
     <thead>
@@ -39,14 +48,6 @@
       <% }); %>
     </tbody>
   </table>
-  <h4>Entire Schedule Object:</h4>
-  <p><%= schedule %></p>
-  <h4>header:</h4>
-  <p><%= header %></p>
-
-  <div class="container">
-    <h2>data</h2>
-  </div>
   <!-- for socket io -->
 
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
