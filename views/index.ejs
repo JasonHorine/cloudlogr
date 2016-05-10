@@ -6,6 +6,7 @@
 <body>
   <h1>Welcome to CloudLogr</h1>
   <h2>The best value in Industrial Data Logging!</h2>
+  <p>(This following is a list of what I believe customers of a product of this sort would want from it.  They seem readily feasible, but are NOT implemented.)</p>
   <ul>
     <li>easy to configure</li>
     <li>quadruple redundancy of your data</li>
@@ -18,6 +19,13 @@
   </ul>
   <div class="container">
     <h2>View data for <a href="/tank" "link to tank view">your tank</a></h2>
+    <p>About:  The data on the following page is retrieved from an API graciously provided by eWON.  The tank application is a simulation running on their server in New York.  The site could very easily target real hardware behind an eWON VPN router.</p>
+    <ol>Each time the following page is loaded:
+      <li>A request is sent to the API to log in</li>
+      <li>A second request uses the ID and retrieves data from the API</li>
+      <li>The application picks the data out of the CSV, adds a sever timestamp, and writes the new value to the MongoDB database hosted on mLab.com</li>
+      <li>The full history of retrieved values is then used to dynamicaly build the table</li>
+    </ol>
   </div>
 </body>
 </html>
