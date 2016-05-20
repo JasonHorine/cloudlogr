@@ -38,7 +38,7 @@
     </thead>
     <tbody>
       <% schedule.data = schedule.data.reverse(); %><!--want newest first to rendering table-->
-      <% schedule.data.forEach(function(dataEntry){ %> <!-- build the table from data -->
+      <% schedule.data.slice(0,10).forEach(function(dataEntry){ %> <!-- build the table from 10 most recent entries data -->
        <tr>
         <td colspan="" rowspan="" headers=""><%= dataEntry.value %></td>
         <td colspan="" rowspan="" headers=""><%= dataEntry.timestamp %></td>
