@@ -128,10 +128,28 @@ router.post('/newSchedule', function(request, response) {
   });
 });
 
-router.post('/stopPolling', function(request, response) {
-  newSchedule.stopPolling();
-  response.send('hit stopPolling. dataPollingState is now ' + this.dataPollingState);
-  console.log('hit stopPolling. dataPollingState is now ' + this.dataPollingState);
+router.post('/startPolling', function(request, response) {
+  newSchedule.startPolling();
+  Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: true }, function(err, schedule){ // after write, database returns schedule
+      // err is returned if error, else updated schedule is
+      if (err) res.send(err);
+      else {
+        response.send('Schedule saved!' + schedule + ' newSchedule = ' + newSchedule);
+        console.log("new schedule saved to DB");
+      };
+  });
+});
+
+router.post('/stopPolling', function(request, response) { // change dataPollingState to false in DB
+  Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: false }, { new: true }, function(err, schedule){ // after write, database returns schedule
+      // err is returned if error, else updated schedule is
+      if (err) console.log(err);
+      else {
+        response.send('hit stopPolling. dataPollingState is now: ' + schedule.dataPollingState);
+        console.log('hit stopPolling. dataPollingState is now: ' + schedule.dataPollingState);
+      };
+  });
+
 });
 
 // // route is not complete nor tested
