@@ -97,38 +97,42 @@ router.get('/', function(req, res, next) {
 // // device internet connection: 10.0.0.2
 // // device VPN connection: 10.220.161.5
 
+//----------------------------------------------//
+//    API route to create a new Schedule        //
+//----------------------------------------------//
+// this route creates a Schedule object. It is not available via the UI yet
+// attributes are currently hard-coded, would be brought in as form fields
+// in a *large form, not good UX!
+// what would be required to allow the user to create a Schedule?
+// how would it be validated before saving it?
+// would need to check the address against the API's data
 
-// // API routes
-// // this route was used to 'seed' my database with one schedule having 4 data entries
-// // router.get('/newSchedule', function(request, response) {
-// //   var clock = new Date(); // set 'clock' as the current time of the server
-// //   var newSchedule = Schedule({ //create a new Schedule model
-// //     user: 'Jason',
-// //     email: 'outbackdog@gmail.com',
-// //     dataAddress: 500,
-// //     dataTagname: "Tank 3 Gallons",
-// //     dataPollRate: 10000,
-// //     dataPollingState: false,
-// //     data: [
-// //       {value: 190,
-// //       timestamp: clock,
-// //       status: true,},
-// //       {value: 191,
-// //       timestamp: clock + 10,  // cannot apparently add seconds this way
-// //       status: true,},
-// //       {value: 190,
-// //       timestamp: clock + 20,
-// //       status: true,},
-// //       {value: 195,
-// //       timestamp: clock + 30,
-// //       status: true,}
-// //       ]
-// //   });
-// //   newSchedule.save(function(err, schedule){ // err is returned if error, else updated schedule is
-// //         if (err) res.send(err);
-// //         else response.send('Schedule created!' + schedule + ' newSchedule = ' + newSchedule);
-// //   });
-// // });
+
+router.post('/newSchedule', function(request, response) {
+  var clock = new Date(); // set 'clock' as the current time of the server
+  var newSchedule = Schedule({ //create a new Schedule model
+    user: 'Jason',
+    email: 'outbackdog@gmail.com',
+    dataAddress: 500, // not being used with current route
+    dataTagname: "Tank_3_gal.",
+    dataPollRate: 10000,
+    dataPollingState: false
+  });
+  newSchedule.startPolling();
+  newSchedule.save(function(err, schedule){ // err is returned if error, else updated schedule is
+        if (err) res.send(err);
+        else {
+          response.send('Schedule saved!' + schedule + ' newSchedule = ' + newSchedule);
+          console.log("new schedule saved to DB");
+        };
+  });
+});
+
+router.post('/stopPolling', function(request, response) {
+  newSchedule.stopPolling();
+  response.send('hit stopPolling. dataPollingState is now ' + this.dataPollingState);
+  console.log('hit stopPolling. dataPollingState is now ' + this.dataPollingState);
+});
 
 // // route is not complete nor tested
 // // for changing the poll rate of a Schedule
