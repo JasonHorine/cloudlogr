@@ -87,35 +87,30 @@ ScheduleSchema.methods.readEwonOnce = function readEwonOnce(){
                 var value = output[3][2];
                 // console.log('get tags response parse: ' + output);
                 // console.log('tags response value: ' + value);
-                // could update database and send logout without blocking
+                var clock = new Date();
+                Schedule.findOneAndUpdate( { user: 'Jason' }, { $push: { data: {
+                  value: value,
+                  timestamp: clock,
+                  status: true,
+                  statusCode: 200,
+                  eWONMessage: null
+                }}}, {new: true}, function(err, schedule){ // after write, database returns schedule
+                  if (err) console.log('could not find user: Jason.  Error: ' + err);
+                  else{
+                    // response.send('the schedule is: ' + schedule); works
+                    // res.render('tank', { schedule: schedule });
+                    console.log('got data via readEwonOnce into DB');
+                    return schedule;
+                  };
+                });
                 request('https://m2web.talk2m.com/t2mapi/logout?' + // log out routine
                   'name=sample' + // hard-coded variabsle, should come from database
                   '&t2mdeveloperid=' + process.env.EWON_DEV_ID +
                   '&t2msession=' + eWONSessionID, function (error, response, body) {
-                    if (!error && response.statusCode == 200) { // if log out good,
-                      var clock = new Date();
-                      Schedule.findOneAndUpdate( { user: 'Jason' }, { $push: { data: {
-                        value: value,
-                        timestamp: clock,
-                        status: true,
-                        statusCode: 200,
-                        eWONMessage: null
-                      }}}, {new: true}, function(err, schedule){ // after write, database returns schedule
-                        if (err) console.log('could not find user: Jason.  Error: ' + err);
-                        else{
-                          // response.send('the schedule is: ' + schedule); works
-                          // res.render('tank', { schedule: schedule });
-                          console.log('got data via readEwonOnce into DB');
-                          return schedule;
-                        };
-                      });
-
-                    }else{
-                      console.log('logout error: ' + error);
-                      console.log('logout error: response: ' + response);
-                      console.log('logout error: body: ' + body);
-                    }
-                });
+                    console.log('logout error: ' + error);
+                    console.log('logout error: response: ' + response);
+                    console.log('logout error: body: ' + body);
+                  });
               });
             }else{
               console.log('get tags error: ' + error);
