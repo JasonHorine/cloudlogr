@@ -45,12 +45,14 @@ router.post('/startPolling', function(request, response) {
   // check for dataPollingState == false, if found change to true and start polling, if not found, error
   Schedule.findOneAndUpdate( { user: 'Jason', dataPollingState: false }, { dataPollingState: true }, {new: true}, function(err, schedule){ // after write, database returns schedule
       // err is returned if error, else updated schedule is
-      if (err) res.send(err);
-      else {
+      // console.log(schedule);
+      if (schedule){
         schedule.startPolling();
-        response.send('hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
         console.log('hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
-      };
+        response.send(true);
+      } else {
+        response.send(false);
+      }
     });
 });
 
@@ -61,9 +63,12 @@ router.post('/startPolling', function(request, response) {
 router.post('/stopPolling', function(request, response) { // change dataPollingState to false in DB
   Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: false }, { new: true }, function(err, schedule){ // after write, database returns schedule
       // err is returned if error, else updated schedule is
-      if (err) console.log(err);
+      if (schedule){ // if a matching schedule is found in the DB,
+        response.send(true);
+        console.log('hit stopPolling. dataPollingState is now: ' + schedule.dataPollingState);
+      }
       else {
-        response.send('hit stopPolling. dataPollingState is now: ' + schedule.dataPollingState);
+        response.send(false);
         console.log('hit stopPolling. dataPollingState is now: ' + schedule.dataPollingState);
       };
   });

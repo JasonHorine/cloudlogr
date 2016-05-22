@@ -107,9 +107,13 @@ ScheduleSchema.methods.readEwonOnce = function readEwonOnce(){
                   'name=sample' + // hard-coded variabsle, should come from database
                   '&t2mdeveloperid=' + process.env.EWON_DEV_ID +
                   '&t2msession=' + eWONSessionID, function (error, response, body) {
-                    console.log('logout error: ' + error);
-                    console.log('logout error: response: ' + response);
-                    console.log('logout error: body: ' + body);
+                    if (error){
+                      console.log('logout error: ' + error);
+                      console.log('logout error: response: ' + response);
+                      console.log('logout error: body: ' + body);
+                    } else {
+                      console.log('logout success');
+                    };
                   });
               });
             }else{
