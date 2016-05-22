@@ -14,8 +14,11 @@ mongoose.connect(process.env.DB_CONN_CLOUDLOGR); // database on mlab via environ
 // EWON_USER_PASSWORD
 
 
-var tankRouter = require("./routes/tankdata"); // tankRouter uses ./routes/tankdata.js
+var tankRouter = require("./routes/tankdata"); // tankRouter uses ./routes/tankdata.js file
 app.use('/tank', tankRouter);  // anything to /tank use tankRouter
+
+var apiRouter = require("./routes/api/v1"); // apiRouter uses ./routes/api/v1.js file
+app.use('/api/v1', apiRouter);  // anything to /api/v1 use apiRouter
 
 
 console.log('Server started on ' + port);

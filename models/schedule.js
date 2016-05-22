@@ -1,4 +1,7 @@
 var mongoose = require('mongoose');  // must do this before using it makes mongoose available here
+var request = require('request');
+var parse = require('csv-parse');
+var babyparse = require('babyparse');
 
 var ScheduleSchema = new mongoose.Schema({  // create a schema
   user: { type: String, required: true },
@@ -34,31 +37,26 @@ ScheduleSchema.methods.startPolling = function startPolling(){
   console.log("started polling")
 };
 
-// ScheduleSchema.methods.stopPolling = function stopPolling(){ // this method stops the polling
-//     this.dataPollingState = false; // keeping track of the status for server restart
-//     clearInterval(this.timerID); // stops the event
-//     this.timerID = null; // used in startPolling to check state
-//     // this.writeConfig(); // save the state to the DB (need to be callback?)
-//     console.log("stopped polling")
-//   };
 
 // call to read from eWON, called from .startPolling at an interval
 ScheduleSchema.methods.pollEwon = function pollEwon(){
+  console.log("pollEwon running")
   var self = this;
-  Schedule.findOne( { user: self.user, dataAddress: self.dataAddress }, dataPollingState, function(err, schedule){
+  Schedule.findOne( { user: self.user, dataAddress: self.dataAddress }, 'dataPollingState', function(err, schedule){
       if (err) console.log('pollEwon could not find user: Jason.  Error: ' + err);
       else{
         // response.send('the schedule is: ' + schedule); works
         // response.render('tank', [ {schedule: "I'm schedule"}, {header: "I'm header"} ]);
         if (schedule.dataPollingState === true){
-          self.readeWonOnce();
+          console.log("pollEwon calling readEwonOnce")
+          self.readEwonOnce();
         }
         else {
           clearInterval(self.timerID);
+          console.log("pollEwon stopped polling")
         }
       };
   });
-  console.log("I represent a data poll from " + this.timerID);
   // poll the data
   // emit the data on socket.io if connection exists
   // write the result to the database, it returns the object
@@ -66,7 +64,7 @@ ScheduleSchema.methods.pollEwon = function pollEwon(){
   // return xyz // return the database object back to the caller
 };
 
-ScheduleSchema.methods.readeWonOnce = function readeWonOnce(){
+ScheduleSchema.methods.readEwonOnce = function readEwonOnce(){
   request('https://m2web.talk2m.com/t2mapi/login?' + // login to get t2msession
     't2maccount=' + process.env.EWON_ACCOUNT +
     '&t2musername=' + process.env.EWON_USER_ID +
@@ -89,6 +87,7 @@ ScheduleSchema.methods.readeWonOnce = function readeWonOnce(){
                 var value = output[3][2];
                 // console.log('get tags response parse: ' + output);
                 // console.log('tags response value: ' + value);
+                // could update database and send logout without blocking
                 request('https://m2web.talk2m.com/t2mapi/logout?' + // log out routine
                   'name=sample' + // hard-coded variabsle, should come from database
                   '&t2mdeveloperid=' + process.env.EWON_DEV_ID +
@@ -101,12 +100,13 @@ ScheduleSchema.methods.readeWonOnce = function readeWonOnce(){
                         status: true,
                         statusCode: 200,
                         eWONMessage: null
-                      }}}, function(err, schedule){ // after write, database returns schedule
-                        if (err) response.send('could not find user: Jason.  Error: ' + err);
+                      }}}, {new: true}, function(err, schedule){ // after write, database returns schedule
+                        if (err) console.log('could not find user: Jason.  Error: ' + err);
                         else{
                           // response.send('the schedule is: ' + schedule); works
                           // res.render('tank', { schedule: schedule });
-                          console.log('got data via readeWononce');
+                          console.log('got data via readEwonOnce into DB');
+                          return schedule;
                         };
                       });
 

@@ -129,15 +129,15 @@ router.post('/newSchedule', function(request, response) {
 });
 
 router.post('/startPolling', function(request, response) {
-  newSchedule.startPolling();
-  Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: true }, function(err, schedule){ // after write, database returns schedule
+  Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: true }, {new: true}, function(err, schedule){ // after write, database returns schedule
       // err is returned if error, else updated schedule is
       if (err) res.send(err);
       else {
-        response.send('Schedule saved!' + schedule + ' newSchedule = ' + newSchedule);
-        console.log("new schedule saved to DB");
+        schedule.startPolling();
+        response.send('hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
+        console.log('hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
       };
-  });
+    });
 });
 
 router.post('/stopPolling', function(request, response) { // change dataPollingState to false in DB
