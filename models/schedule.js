@@ -82,7 +82,7 @@ ScheduleSchema.methods.readEwonOnce = function readEwonOnce(){
           '&t2mdeviceusername=' + process.env.EWON_DEVICE_USERNAME +
           '&t2mdevicepassword=' + process.env.EWON_DEVICE_PASSWORD +
           '&t2msession=' + eWONSessionID, function (error, response, body) {
-            if (!error && response.statusCode == 200) { // if no error
+            if (!error && response.statusCode == 200) { // if no error... should record error instead if it exists
               parse(body, {delimiter: ';'}, function(err, output){
                 var value = output[3][2];
                 // console.log('get tags response parse: ' + output);
@@ -95,8 +95,9 @@ ScheduleSchema.methods.readEwonOnce = function readEwonOnce(){
                   statusCode: 200,
                   eWONMessage: null
                 }}}, {new: true}, function(err, schedule){ // after write, database returns schedule
-                  if (err) console.log('could not find user: Jason.  Error: ' + err);
-                  else{
+                  if (err){
+                    console.log('could not find user: Jason.  Error: ' + err);
+                  } else {
                     // response.send('the schedule is: ' + schedule); works
                     // res.render('tank', { schedule: schedule });
                     console.log('got data via readEwonOnce into DB');

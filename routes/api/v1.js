@@ -47,7 +47,8 @@ router.post('/startPolling', function(request, response) {
       // err is returned if error, else updated schedule is
       // console.log(schedule);
       if (schedule){
-        schedule.startPolling();
+        schedule.readEwonOnce(); // read immediately
+        schedule.startPolling(); // start polling, first will be in dataPollRate ms
         console.log('hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
         response.send(true);
       } else {
@@ -73,6 +74,30 @@ router.post('/stopPolling', function(request, response) { // change dataPollingS
       };
   });
 });
+
+
+//----------------------------------------------//
+//    API route to change poll rate             //
+//----------------------------------------------//
+// post to /api/vi/changePollRate with newDataPollRate: in body
+// if not already polling, change poll rate and return new poll rate
+// if already polling, return 'stop polling before changing the rate'
+// if a bad poll rate is specified, return 'bad poll rate'
+router.post('/changePollRate', function(request, response) {
+  //response.send(request.body);
+  Schedule.findOneAndUpdate( { user: 'Jason', dataPollingState: false }, { dataPollRate: request.body.newDataPollRate }, { new: true, runValidators: true }, function(err, schedule){ // after write, database returns schedule
+      // err is returned if error, else updated schedule is
+      if (schedule){ // if a schedule is returned, the update was possible,
+        response.send(schedule);
+        console.log('hit changePollRate. dataPollRtate is now: ' + schedule.dataPollRate);
+      }
+      else {
+        response.send(err);
+        console.log('hit changePollRate. err: ' + err + 'schedule: ' + schedule);
+      };
+  });
+});
+
 
 
 // // route is not complete nor tested

@@ -37,16 +37,13 @@ app.use(function(request, response, next) {
 });
 
 
-/**
- * Create HTTP server.
- */
+
+// Create HTTP server.
+
 var http = require('http');
 var server = http.createServer(app);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
-
+// Listen on provided port, on all network interfaces.
 server.listen(port);
 
 // for socket io:
