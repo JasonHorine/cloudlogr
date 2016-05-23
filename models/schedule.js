@@ -114,7 +114,9 @@ ScheduleSchema.methods.readEwonOnce = function readEwonOnce(callback){ // reads 
                       console.log('logout success');
                     };
                   });
-                callback.send(data); // response.send(object representing the data read)
+                if (callback){
+                  callback.send(data); // response.send(object representing the data read)
+                };
               });
             }else{
               console.log('get tags error: ' + error);
