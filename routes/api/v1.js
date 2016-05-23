@@ -47,7 +47,7 @@ router.post('/startPolling', function(request, response) {
       // err is returned if error, else updated schedule is
       // console.log(schedule);
       if (schedule){
-        schedule.readEwonOnce(); // read immediately
+        //schedule.readEwonOnce(); // read immediately
         schedule.startPolling(); // start polling, first will be in dataPollRate ms
         console.log('hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
         response.send(true);
@@ -95,6 +95,19 @@ router.post('/changePollRate', function(request, response) {
         response.send(err);
         console.log('hit changePollRate. err: ' + err + 'schedule: ' + schedule);
       };
+  });
+});
+
+//----------------------------------------------//
+//    API route to get an eWON reading          //
+//----------------------------------------------//
+router.get('/oneReading', function(request, response){
+  Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get entry with user: Jason from DB
+    if (schedule) {
+      schedule.readEwonOnce(response); // will read eWON, save the data to the DB and return the most recent data object
+    } else { response.send('could not find user: Jason.  Error: ' + err);
+      // response.send('the schedule is: ' + schedule); works
+    };
   });
 });
 
