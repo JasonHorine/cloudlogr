@@ -98,96 +98,25 @@ router.post('/changePollRate', function(request, response) {
   });
 });
 
+//----------------------------------------------//
+//    API route to get an eWON reading          //
+//----------------------------------------------//
+ router.get('/oneReading', function(request, response){
+   Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get entry with user: Jason from DB
+     if (schedule) {
+       schedule.readEwonOnce(response); // will read eWON, save the data to the DB and redirect to /tank
+     } else { response.send('could not find user: Jason.  Error: ' + err);
+       // response.send('the schedule is: ' + schedule); works
+     };
+   });
+ });
 
 
-// // route is not complete nor tested
-// // for changing the poll rate of a Schedule
-// router.post('/changePoll', function(request, response, next) {
-//   // this sends the ‘body’ data to the view for testing
-//   //res.send(request.body);
-//   var user = request.body.user;  // used for query
-//   var dataAddress = request.body.dataAddress; // used for query
-//   var pollRate = request.body.pollRate; // new value to write
-//   if (pollRate < 5000 || pollRate > 2147483647){ // if pollRate is invalid
-//     response.send('pollRate bad');
-//   }
-//   else{ // if pollRate is valid, find the matching schedule and write it
-//     // find first with this user and dataAddress, update pollRate
-//     Schedule.findOneAndUpdate({ $and: [ { user: user }, { dataAddress: dataAddress } ] }, { pollRate: pollRate }, function(err, schedule) {
-//       if (err) console.log(err); //if pollRate is not written to DB
-//       else { //if pollRate is written to the DB
-//         console.log('pollRate updated by user: ' + schedule.user);
-
-//       };
-//     });
-//   };
-// });
+//----------------------------------------------//
+//    API route to update settings of schedule  //
+//----------------------------------------------//
 
 
-// // call to write to the eWON process inputs
-// // returns null or error
-// //PollData.prototype.writeEwon = function(fillValve, drainValve){
-//   // code here :)
-// //}
-// // call to get all info for this schedule from the DB
-// //PollData.prototype.getDBData = function(){
-//   // code here :)
-// //}
-// // call to append DB with one data point
-// // returns the
-// PollData.prototype.appendToDBData = function(){
-//   Schedule.update(
-//     { _id: this._id },
-//     { $push: { data: {
-//       // value: Number,  // the value retrieved, if any
-//       // timestamp: Date,  // MongoDB cannot stamp the time at this level, provide it in route
-//       // status: Boolean, // eWON returns true or false
-//       // statusCode: Number, // eWON will return code only if not good
-//       // eWONMessage: String // eWON will return text only if not good
-//   } } }
-// )
-// }
-// // call to change the polling rate
-// // returns pollRate or null if rate is bad
-// PollData.prototype.changePollRate = function(newPollRate){
-//   if (this.validatePollRate){ // if newpollRate is valid
-//     if (this.dataPollingState) { // if currently polling, set wasPolling, stop polling
-//       var wasPolling = true;
-//       this.stopPolling();
-//     };
-//     this.pollRate = newPollRate; // change poll rate in the instance
-//     this.writeConfig(this); // save the instance variables to the database
-//     return this.pollRate; // respond to the caller with new pollRate to show that it's done
-//     wasPolling ? this.startPolling(); // if it wasPolling, start polling again
-//   }
-//   // if newPollRate was invalid
-//   else {
-//     return null;
-//   }
-// }
-// // call to validate the poll rate is acceptable to use
-// PollData.prototype.validatePollRate = function(newPollRate){
-//   if (2147483647 > newPollRate && newPollRate > 10000){
-//     return true;
-//   }
-//   else {
-//     return false;
-//   }
-// }
-// // call to write all config settings of this instance to the database
-// PollData.prototype.writeConfig = function()
-//   // find the record based on matching its id
-//   Schedule.findOneAndUpdate({ _id: this._id } , { //update the following
-//     user: this.user,
-//     email: this.email,
-//     dataAddress: this.dataAddress,
-//     dataTagname: this.dataTagname,
-//     dataPollRate: this.dataPollRate,
-//     dataPollingState: this.dataPollingState,
-//     pollRate: this.pollRate,
-//      }, function(err, schedule) {
-//       if (err) console.log(err); //if write fails
-//       else { //if pollRate is written to the DB
-//         console.log('config updated by user: ' + this.user);
-//       };
-//     });
+//----------------------------------------------//
+//    API route to change the process inputs    //
+//----------------------------------------------//

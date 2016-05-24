@@ -52,6 +52,10 @@
   <h3>Poll Rate: <%= schedule.dataPollRate %>ms.</h3>
   <h3>Polling State: <%= schedule.dataPollingState ? 'Active' : 'Inactive' %></h3>
   <div class="table_buttons">
+    <form action="/api/v2/oneReading" method="get" accept-charset="utf-8">
+      <input type="hidden">
+      <input type="submit" value="One Reading">
+    </form>
     <form action="/api/v2/startPolling" method="post" accept-charset="utf-8">
       <input type="hidden">
       <input type="submit" value="Start Polling">

@@ -64,7 +64,7 @@ ScheduleSchema.methods.pollEwon = function pollEwon(){
   // return xyz // return the database object back to the caller
 };
 
-ScheduleSchema.methods.readEwonOnce = function readEwonOnce(){
+ScheduleSchema.methods.readEwonOnce = function readEwonOnce(callback){ // callback is executed at end
   request('https://m2web.talk2m.com/t2mapi/login?' + // login to get t2msession
     't2maccount=' + process.env.EWON_ACCOUNT +
     '&t2musername=' + process.env.EWON_USER_ID +
@@ -88,20 +88,23 @@ ScheduleSchema.methods.readEwonOnce = function readEwonOnce(){
                 // console.log('get tags response parse: ' + output);
                 // console.log('tags response value: ' + value);
                 var clock = new Date();
-                Schedule.findOneAndUpdate( { user: 'Jason' }, { $push: { data: {
+                var data = {
                   value: value,
                   timestamp: clock,
                   status: true,
                   statusCode: 200,
                   eWONMessage: null
-                }}}, {new: true}, function(err, schedule){ // after write, database returns schedule
+                };
+                Schedule.findOneAndUpdate( { user: 'Jason' }, { $push: { data: data }}, { new: true }, function(err, schedule){ // after write, database returns schedule
                   if (err){
                     console.log('could not find user: Jason.  Error: ' + err);
                   } else {
-                    // response.send('the schedule is: ' + schedule); works
-                    // res.render('tank', { schedule: schedule });
                     console.log('got data via readEwonOnce into DB');
-                    return schedule;
+                    if (callback){ //if a callback was provided, use it
+                      callback.redirect('/tank'); // response.redirect
+                    } else { // if no callback provided, return schedule
+                      return schedule;
+                    }
                   };
                 });
                 request('https://m2web.talk2m.com/t2mapi/logout?' + // log out routine
@@ -116,6 +119,7 @@ ScheduleSchema.methods.readEwonOnce = function readEwonOnce(){
                       console.log('logout success');
                     };
                   });
+
               });
             }else{
               console.log('get tags error: ' + error);
