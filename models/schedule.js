@@ -65,6 +65,7 @@ ScheduleSchema.methods.pollEwon = function pollEwon(){
 };
 
 ScheduleSchema.methods.readEwonOnce = function readEwonOnce(callback){ // callback is executed at end
+  console.log('starting readEwonOnce, logging in');
   request('https://m2web.talk2m.com/t2mapi/login?' + // login to get t2msession
     't2maccount=' + process.env.EWON_ACCOUNT +
     '&t2musername=' + process.env.EWON_USER_ID +
@@ -73,6 +74,7 @@ ScheduleSchema.methods.readEwonOnce = function readEwonOnce(callback){ // callba
       if (!error && response.statusCode == 200) {  // if no error
         var bodyJson = JSON.parse(body);
         var eWONSessionID = bodyJson.t2msession; // save the session ID
+        console.log('requesting data');
         request('https://m2web.talk2m.com/t2mapi/get/sample/rcgi.bin/ParamForm?' + // get tags
           'AST_Param=$dtIV$ftT' +
           '&t2maccount=' + process.env.EWON_ACCOUNT +
@@ -99,7 +101,7 @@ ScheduleSchema.methods.readEwonOnce = function readEwonOnce(callback){ // callba
                   if (err){
                     console.log('could not find user: Jason.  Error: ' + err);
                   } else {
-                    console.log('got data via readEwonOnce into DB');
+                    console.log('data saved');
                     if (callback){ //if a callback was provided, use it
                       callback.redirect('/tank'); // response.redirect
                     } else { // if no callback provided, return schedule

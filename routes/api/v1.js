@@ -89,7 +89,7 @@ router.post('/changePollRate', function(request, response) {
       // err is returned if error, else updated schedule is
       if (schedule){ // if a schedule is returned, the update was possible,
         response.send(schedule);
-        console.log('hit changePollRate. dataPollRtate is now: ' + schedule.dataPollRate);
+        console.log('hit changePollRate. dataPollRtate is now: ' + schedule.dataPollRate + 'ms');
       }
       else {
         response.send(err);

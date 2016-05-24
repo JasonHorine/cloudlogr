@@ -49,7 +49,7 @@
       <% }); %>
     </tbody>
   </table>
-  <h3>Poll Rate: <%= schedule.dataPollRate %>ms.</h3>
+  <h3>Poll Rate: <%= schedule.dataPollRate/1000 %> seconds</h3>
   <h3>Polling State: <%= schedule.dataPollingState ? 'Active' : 'Inactive' %></h3>
   <div class="table_buttons">
     <form action="/api/v2/oneReading" method="get" accept-charset="utf-8">
@@ -65,8 +65,8 @@
       <input type="submit" value="Stop Polling">
     </form>
     <form action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
-      Poll Rate:
-      <input type="text" name="newDataPollRate" value="5,000 - 60,000 (ms)" onFocus="clearText(this)">
+      Poll Rate (s):
+      <input type="text" name="newDataPollRate" value="5 - 60" onFocus="clearText(this)">
       <input type="submit" value="Submit">
     </form>
   </div>

@@ -57,9 +57,9 @@ var io = require('socket.io')(server);
 
 // socket io
   io.on('connection', function(socket){
-    console.log('a user connected');
+    //console.log('a user connected');
     socket.on('disconnect', function(){
-      console.log('user disconnected');
+      //console.log('user disconnected');
     });
   });
 

@@ -38,7 +38,7 @@ router.post('/newSchedule', function(request, response) {
 });
 
 //----------------------------------------------//
-//    API route to start polling                //
+//    API route to start polling of eWON        //
 //----------------------------------------------//
 router.post('/startPolling', function(request, response) {
   // check for dataPollingState == false, if found change to true and start polling, if not found, error
@@ -56,7 +56,7 @@ router.post('/startPolling', function(request, response) {
 
 
 //----------------------------------------------//
-//    API route to stop polling                 //
+//    API route to stop polling of eWON         //
 //----------------------------------------------//
 router.post('/stopPolling', function(request, response) { // change dataPollingState to false in DB
   Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: false }, { new: true }, function(err, schedule){ // after write, database returns schedule
@@ -74,7 +74,7 @@ router.post('/stopPolling', function(request, response) { // change dataPollingS
 
 
 //----------------------------------------------//
-//    API route to change poll rate             //
+//    API route to change poll rate of eWON     //
 //----------------------------------------------//
 // post to /api/vi/changePollRate with newDataPollRate: in body
 // if not already polling, change poll rate and return new poll rate
@@ -82,11 +82,11 @@ router.post('/stopPolling', function(request, response) { // change dataPollingS
 // if a bad poll rate is specified, return 'bad poll rate'
 router.post('/changePollRate', function(request, response) {
   //response.send(request.body);
-  Schedule.findOneAndUpdate( { user: 'Jason', dataPollingState: false }, { dataPollRate: request.body.newDataPollRate }, { new: true, runValidators: true }, function(err, schedule){ // after write, database returns schedule
+  Schedule.findOneAndUpdate( { user: 'Jason', dataPollingState: false }, { dataPollRate: request.body.newDataPollRate * 1000 }, { new: true, runValidators: true }, function(err, schedule){ // after write, database returns schedule
       // err is returned if error, else updated schedule is
       response.redirect('/tank');
       if (schedule){ // if the write succeeded
-        console.log('hit changePollRate. dataPollRtate is now: ' + schedule.dataPollRate);
+        console.log('hit changePollRate. dataPollRtate is now: ' + schedule.dataPollRate + 'ms');
       } else {
         console.log('hit changePollRate. did not update');
       };
@@ -95,7 +95,7 @@ router.post('/changePollRate', function(request, response) {
 
 
 //----------------------------------------------//
-//    API route to get an eWON reading          //
+//    API route to get one eWON reading         //
 //----------------------------------------------//
  router.get('/oneReading', function(request, response){
    Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get entry with user: Jason from DB
@@ -108,7 +108,17 @@ router.post('/changePollRate', function(request, response) {
  });
 
 
-
+//----------------------------------------------//
+//    API route to get database readings        //
+//----------------------------------------------//
+ router.get('/data', function(request, response){
+   Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get entry with user: Jason from DB
+     if (schedule) {
+       response.send({data: schedule.data.slice(0,10)});  // send elements 0-9
+     } else { response.send('could not find user: Jason.  Error: ' + err);
+     };
+   });
+ });
 //----------------------------------------------//
 //    API route to update settings of schedule  //
 //----------------------------------------------//
