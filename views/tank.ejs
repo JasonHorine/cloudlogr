@@ -4,7 +4,7 @@
   <title>CloudLogr</title>
   <style>
     body {
-      background-image: url("http://www.3-dlinelocating.com/wp-content/uploads/2016/02/Tank-Farm-Photo.jpg");
+      background-image: url("./images/tank_farm.jpg");
       background-size: cover;
       background-repeat: no-repeat;
       text-align: center;
@@ -22,6 +22,7 @@
       left: -253px;
     }
   </style>
+  <script src="/javascripts/tank.js" type="text/javascript" charset="utf-8" async defer></script>
 </head>
 <body>
   <h1>Welcome to CloudLogr</h1>
@@ -48,6 +49,23 @@
       <% }); %>
     </tbody>
   </table>
+  <h3>Poll Rate: <%= schedule.dataPollRate %>ms.</h3>
+  <h3>Polling State: <%= schedule.dataPollingState ? 'Active' : 'Inactive' %></h3>
+  <div class="table_buttons">
+    <form action="/api/v2/startPolling" method="post" accept-charset="utf-8">
+      <input type="hidden">
+      <input type="submit" value="Start Polling">
+    </form>
+    <form action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
+      <input type="hidden">
+      <input type="submit" value="Stop Polling">
+    </form>
+    <form action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
+      Poll Rate:
+      <input type="text" name="newDataPollRate" value="5,000 - 60,000 (ms)" onFocus="clearText(this)">
+      <input type="submit" value="Submit">
+    </form>
+  </div>
   <!-- for socket io -->
 
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
@@ -60,5 +78,6 @@
     console.log('Connected on front end.');
 });
   </script>
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 </body>
 </html>

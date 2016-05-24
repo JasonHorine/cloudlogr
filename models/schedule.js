@@ -13,7 +13,7 @@ var ScheduleSchema = new mongoose.Schema({  // create a schema
   dataPollRate: {
    type: Number,
    min: 5000, // 5 seconds
-   max: 2147483647, // ~28 days
+   max: 60000, // max possible is 2147483647, ~28 days
    required: true },
   dataPollingState: Boolean,
   data: [{   // each read is saved as one element in this array
