@@ -15,6 +15,11 @@
   <title>CloudLogr</title>
 </head>
 <body>
+  <header id="header" class="">
+    <a class="button_link relative" href="/">
+      Home
+    </a>
+  </header><!-- /header -->
   <h1>CloudLogr</h1>
   <!-- <button class="button_poll" type="">Poll: <%= schedule.dataPollRate %>ms</button> -->
   <table class="tank_table">
@@ -25,22 +30,22 @@
       <span> seconds</span>
       <form class="inline" action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
         <input class="short" type="text" name="newDataPollRate" value="5 - 60" onFocus="clearText(this)">
-        <input type="submit" value="Change">
+        <input class="button_link" type="submit" value="Change">
       </form>
     </div>
     <div class="control_group">
       <span>Polling: </span>
       <span id="data_polling_state"><%= schedule.dataPollingState ? 'Active' : 'Inactive' %></span>
-      <button class="inline" type="button" onclick="pollDBData()">Start Polling</button>
+      <button class="inline button_link" type="button" onclick="pollDBData()">Start Polling</button>
       <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
         <input type="hidden">
-        <input type="submit" value="Stop Polling">
+        <input class="button_link" type="submit" value="Stop Polling">
       </form>
     </div>
     <div class="control_group">
       <form action="/api/v2/oneReading" method="get" accept-charset="utf-8">
         <input type="hidden">
-        <input type="submit" value="Get One Reading">
+        <input class="button_link" type="submit" value="Get One Reading">
       </form>
     </div>
     </caption>

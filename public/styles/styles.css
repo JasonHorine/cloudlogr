@@ -24,7 +24,6 @@ td#td_date {
 h1 {
   font-size: 2.4em;
   line-height: 120%;
-  margin-top: 20px;
   margin-bottom: 10px;
 }
 h2 {
@@ -42,6 +41,10 @@ p, ul, button, span, a, input{
   font-size: 1em;
   letter-spacing: 1px;
 }
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
 .inline{
   display: inline-block;
 }
@@ -50,27 +53,32 @@ input.short{
   text-align: center;
 }
 
-/*unused below*/
-
-header{
-  padding-top: 5px;
+.wrapper{
+  text-align: left;
+  color: black;
+  background: #ffffff;
+  opacity: 0.8;
+  border-radius: 10px;
+  border-width: 1px;
+  border-color: #aaaaaa;
+  padding: 40px;
 }
-video {
-  width: 100%;
-  max-width: 640px;
+.absolute{
+  position: absolute;
+  left: 77px;
+  top: 0px;
 }
-a {
-  color: inherit;
-  text-decoration: inherit;
+.relative{
+  position: relative;
+  left: -270px;
+  top: 0px;
 }
-.a_link{
-  text-decoration: underline;
+.center_text {
+  text-align: center;
 }
-.a_link:hover{
-  opacity: 0.5;
-}
-#linked_in:hover{
-  opacity: 0.5;
+.center {
+  display: block;
+  margin: 10px auto;
 }
 .button_link{
   display: inline-block;
@@ -86,14 +94,30 @@ a {
 .button_link:hover{
   opacity: 0.7;
 }
-.center {
-  display: block;
-  margin: 10px auto;
+.a_link{
+  text-decoration: underline;
+}
+
+/*unused below
+
+header{
+  padding-top: 5px;
+}
+video {
+  width: 100%;
+  max-width: 640px;
+}
+
+.a_link{
+  text-decoration: underline;
+}
+.a_link:hover{
+  opacity: 0.5;
+}
+#linked_in:hover{
+  opacity: 0.5;
 }
 .slides {
-}
-.center_text {
-  text-align: center;
 }
 .project_text_box{
   background-color: black;

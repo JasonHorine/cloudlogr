@@ -15,28 +15,27 @@
   <title>CloudLogr</title>
 </head>
 <body>
-  <h1>CloudLogr</h1>
-  <h2>Your Data, Safe</h2>
-  <p>(This following is a list of what I believe customers of a product of this sort would want from it.  They seem feasible, but are NOT implemented.)</p>
-  <ul>
-    <li>easy to configure</li>
-    <li>quadruple redundancy of your data</li>
-    <li>redundant servers across the globe</li>
-    <li>upload your tag database for setup</li>
-    <li>got internet? got data!</li>
-    <li>online historical data visualization</li>
-    <li>text and email alerts</li>
-    <li>email csv data retrieval</li>
-  </ul>
-  <div class="container">
-    <h2>View data for <a href="/tank" "link to tank view">your tank</a></h2>
-    <p>About:  The data on the following page is retrieved from an API graciously provided by eWON.  The tank application is a simulation running on their server in New York.  The site could very easily target real hardware behind an eWON VPN router.</p>
-    <ol>Each time the following page is loaded:
-      <li>A request is sent to the API to log in</li>
-      <li>A second request uses the ID and retrieves data from the API</li>
-      <li>The application picks the data out of the CSV, adds a sever timestamp, and writes the new value to the MongoDB database hosted on mLab.com</li>
-      <li>The full history of retrieved values is then used to dynamicaly build the table</li>
-    </ol>
+  <div class="wrapper">
+    <h1 class="center_text">CloudLogr</h1>
+    <h2 class="center_text"><a class="a_link" href="/tank" "link to data view">Log Data</a></h2>
+    <br>
+    <p>Functionality:  One notable feature on the following page that is not readily apparent is that if you hit start polling, the server spins up a process of polling the eWON API at the indicated interval.  Even if the browser is closed, the server will continue gather data and storing it in a MongoDB database.  Try it!</p>
+    <br>
+    <p>And yes, if something in the UI is not readily apparent, that's bad UX.  What infrastructure I've created to date has been designed with UX in mind, but the UI has not yet receive the attention it deserves.</p>
+    <br>
+    <p>eWON:  The data on the following page is retrieved from an API graciously provided by eWON.  The tank application is a simulation running on their server in New York.  The site could very easily target real hardware behind an eWON VPN router.</p>
+    <br>
+    <p>(The following list is what I believe customers of a product of this sort would want from it.  It's a preliminary marketing spec.  The items seem feasible, but are NOT implemented.)</p>
+    <ul>
+      <li>easy to configure</li>
+      <li>quadruple redundancy of your data</li>
+      <li>redundant servers across the globe</li>
+      <li>upload your tag database for setup</li>
+      <li>got internet? got data!</li>
+      <li>online historical data visualization</li>
+      <li>text and email alerts</li>
+      <li>email csv data retrieval</li>
+    </ul>
   </div>
 </body>
 </html>
