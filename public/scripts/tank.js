@@ -7,7 +7,6 @@ function clearText(thefield){
   }
 }
 
-
 var timerID = null
 var pollDBData = function(){
   if ($("#data_polling_state").html() === 'Inactive'){ //if DOM shows inactive state

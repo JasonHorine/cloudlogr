@@ -1,33 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- reset -->
+  <link  href="styles/reset.css" rel="stylesheet">
+
+  <meta charset="utf-8">
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <link rel="stylesheet" href="styles/styles.css">
+  <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
 
   <title>CloudLogr</title>
-  <style>
-    body {
-      background-image: url("./images/tank_farm.jpg");
-      background-size: cover;
-      background-repeat: no-repeat;
-      text-align: center;
-    }
-    table, th, td {
-        border: 2px solid black;
-        padding: 4px;
-        text-align: center;
-        background: #efefef;
-        margin: 0 auto;
-    }
-    button.button_poll {
-      position: relative;
-      top: 50px;
-      left: -253px;
-    }
-  </style>
+</head>
 <body>
   <h1>CloudLogr</h1>
   <!-- <button class="button_poll" type="">Poll: <%= schedule.dataPollRate %>ms</button> -->
   <table class="tank_table">
-    <caption><h3><%= schedule.dataTagname %></h3></caption>
+    <caption><h3><%= schedule.dataTagname %></h3>
+    <div class="control_group">
+      <span>Poll Rate: </span>
+      <span id="data_poll_rate"><%= schedule.dataPollRate/1000 %></span>
+      <span> seconds</span>
+      <form class="inline" action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
+        <input class="short" type="text" name="newDataPollRate" value="5 - 60" onFocus="clearText(this)">
+        <input type="submit" value="Change">
+      </form>
+    </div>
+    <div class="control_group">
+      <span>Polling: </span>
+      <span id="data_polling_state"><%= schedule.dataPollingState ? 'Active' : 'Inactive' %></span>
+      <button class="inline" type="button" onclick="pollDBData()">Start Polling</button>
+      <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
+        <input type="hidden">
+        <input type="submit" value="Stop Polling">
+      </form>
+    </div>
+    <div class="control_group">
+      <form action="/api/v2/oneReading" method="get" accept-charset="utf-8">
+        <input type="hidden">
+        <input type="submit" value="Get One Reading">
+      </form>
+    </div>
+    </caption>
     <thead>
       <tr>
         <th colspan="" rowspan="" headers="" scope="">Value</th>
@@ -48,28 +64,8 @@
       <% }); %>
     </tbody>
   </table>
-  <span>Poll Rate: </span>
-  <span id="data_poll_rate"><%= schedule.dataPollRate/1000 %></span>
-  <span> seconds</span><br>
-  <span>Polling State: </span>
-  <span id="data_polling_state"><%= schedule.dataPollingState ? 'Active' : 'Inactive' %></span><br>
-  <div class="table_buttons">
-    <form action="/api/v2/oneReading" method="get" accept-charset="utf-8">
-      <input type="hidden">
-      <input type="submit" value="One Reading">
-    </form>
-    <button type="button" onclick="pollDBData()">Start Polling</button>
-    </form>
-    <form action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
-      <input type="hidden">
-      <input type="submit" value="Stop Polling">
-    </form>
-    <form action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
-      Poll Rate (s):
-      <input type="text" name="newDataPollRate" value="5 - 60" onFocus="clearText(this)">
-      <input type="submit" value="Submit">
-    </form>
-  </div>
+
+
   <!-- for socket io -->
 
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
