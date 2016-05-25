@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <title>CloudLogr</title>
   <style>
     body {
@@ -22,10 +23,8 @@
       left: -253px;
     }
   </style>
-  <script src="/javascripts/tank.js" type="text/javascript" charset="utf-8" async defer></script>
-</head>
 <body>
-  <h1>Welcome to CloudLogr</h1>
+  <h1>CloudLogr</h1>
   <!-- <button class="button_poll" type="">Poll: <%= schedule.dataPollRate %>ms</button> -->
   <table class="tank_table">
     <caption><h3><%= schedule.dataTagname %></h3></caption>
@@ -40,25 +39,26 @@
     <tbody>
       <% schedule.data = schedule.data.reverse(); %><!--want newest first to rendering table-->
       <% schedule.data.slice(0,10).forEach(function(dataEntry){ %> <!-- build the table from 10 most recent entries data -->
-       <tr>
-        <td colspan="" rowspan="" headers=""><%= dataEntry.value %></td>
-        <td colspan="" rowspan="" headers=""><%= dataEntry.timestamp %></td>
-        <td colspan="" rowspan="" headers=""><%= dataEntry.status ? 'good' : dataEntry.statusCode %></td>
-        <td colspan="" rowspan="" headers=""><%= dataEntry.eWONMessage %></td>
+        <tr>
+          <td ><%= dataEntry.value %></td>
+          <td id="td_date"><%= dataEntry.timestamp %></td>
+          <td ><%= dataEntry.status ? 'good' : dataEntry.statusCode %></td>
+          <td ><%= dataEntry.eWONMessage %></td>
         </tr>
       <% }); %>
     </tbody>
   </table>
-  <h3>Poll Rate: <%= schedule.dataPollRate/1000 %> seconds</h3>
-  <h3>Polling State: <%= schedule.dataPollingState ? 'Active' : 'Inactive' %></h3>
+  <span>Poll Rate: </span>
+  <span id="data_poll_rate"><%= schedule.dataPollRate/1000 %></span>
+  <span> seconds</span><br>
+  <span>Polling State: </span>
+  <span id="data_polling_state"><%= schedule.dataPollingState ? 'Active' : 'Inactive' %></span><br>
   <div class="table_buttons">
     <form action="/api/v2/oneReading" method="get" accept-charset="utf-8">
       <input type="hidden">
       <input type="submit" value="One Reading">
     </form>
-    <form action="/api/v2/startPolling" method="post" accept-charset="utf-8">
-      <input type="hidden">
-      <input type="submit" value="Start Polling">
+    <button type="button" onclick="pollDBData()">Start Polling</button>
     </form>
     <form action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
       <input type="hidden">
@@ -83,5 +83,7 @@
 });
   </script>
   <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+  <script src="/scripts/tank.js" type="text/javascript" charset="utf-8" async defer></script>
+</head>
 </body>
 </html>

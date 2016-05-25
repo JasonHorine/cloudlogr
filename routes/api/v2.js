@@ -111,14 +111,17 @@ router.post('/changePollRate', function(request, response) {
 //----------------------------------------------//
 //    API route to get database readings        //
 //----------------------------------------------//
- router.get('/data', function(request, response){
-   Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get entry with user: Jason from DB
-     if (schedule) {
-       response.send({data: schedule.data.slice(0,10)});  // send elements 0-9
-     } else { response.send('could not find user: Jason.  Error: ' + err);
-     };
-   });
- });
+router.get('/data', function(request, response){
+  Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get entry with user: Jason from DB
+    if (schedule) {
+      schedule.data = schedule.data.reverse();
+      response.send({data: schedule.data.slice(0, 10)});  // send elements 0-9
+    } else { response.send('could not find user: Jason.  Error: ' + err);
+    };
+  });
+});
+
+
 //----------------------------------------------//
 //    API route to update settings of schedule  //
 //----------------------------------------------//
