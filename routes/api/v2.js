@@ -100,7 +100,8 @@ router.post('/changePollRate', function(request, response) {
  router.get('/oneReading', function(request, response){
    Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get entry with user: Jason from DB
      if (schedule) {
-       schedule.readEwonOnce(response); // will read eWON, save the data to the DB and redirect to /tank
+       // schedule.readEwonOnce(response); // will read eWON, save the data to the DB and redirect to /tank
+       schedule.readMockOnce(response); //
      } else { response.send('could not find user: Jason.  Error: ' + err);
        // response.send('the schedule is: ' + schedule); works
      };

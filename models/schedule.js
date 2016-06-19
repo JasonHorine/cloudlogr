@@ -13,11 +13,14 @@ var ScheduleSchema = new mongoose.Schema({  // create a schema
   dataPollRate: {
    type: Number,
    min: 5000, // 5 seconds
-   max: 60000, // max possible is 2147483647, ~28 days
+   max: 60000, // 60 seconds, actual max possible is 2147483647, ~28 days
    required: true },
-  dataPollingState: Boolean,
+  dataPollingState: Boolean, // process sets or resets this when polling changes
+  dataPollingStateReq: Boolean, // user sets this to request a change to the state
   data: [{   // each read is saved as one element in this array
     value: Number,  // the value retrieved, if any
+    inlet: Boolean,
+    outlet: Boolean,
     timestamp: Date,  // MongoDB cannot stamp the time at this level, provide it in route
     status: Boolean, // eWON returns true or false
     statusCode: Number, // eWON will return code only if not good
@@ -49,7 +52,8 @@ ScheduleSchema.methods.pollEwon = function pollEwon(){
         // response.render('tank', [ {schedule: "I'm schedule"}, {header: "I'm header"} ]);
         if (schedule.dataPollingState === true){
           console.log("pollEwon calling readEwonOnce")
-          self.readEwonOnce();
+          // self.readEwonOnce();
+          self.readMockOnce();
         }
         else {
           clearInterval(self.timerID);
@@ -57,13 +61,49 @@ ScheduleSchema.methods.pollEwon = function pollEwon(){
         }
       };
   });
-  // poll the data
-  // emit the data on socket.io if connection exists
-  // write the result to the database, it returns the object
-  // var xyz = findOneAndUpdate...
-  // return xyz // return the database object back to the caller
 };
 
+// this method added after eWON free access expired
+// call to generate one simulated data point, save to DB and execute callback (response)
+ScheduleSchema.methods.readMockOnce = function readMockOnce(callback){ // callback is executed at end
+  console.log('starting readMockOnce');
+  Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get the previous reading
+    if (err){
+      console.log('error reading DB: ' + err);
+      return (err);
+    } else { // calculate the new value to store and return
+      var clock = new Date();
+      var lastEntry = schedule.data.slice(-1)[0];
+      var elapsed = clock - lastEntry.timestamp; // dif between now and last entry in milliseconds
+      var lastValue = lastEntry.value;
+      value = lastEntry.value + ((Math.random() - 0.5) * 0.000278 * elapsed); // Assume vessel takes 2hr to fill or drain. (720,000ms).  This formula sets that as the maximum rate of change possible.  Change is randomized with pos and neg equally likely.
+      (value > 100) ? value = 100 : value = value; // clamp to <= 100
+      (value < 0) ? value = 0 : value = value; // clamp to >= 0
+      var data = { // the new data entry object for the DB
+        value: value,
+        timestamp: clock,
+        status: true,
+        statusCode: 200,
+        eWONMessage: null
+      };
+      Schedule.findOneAndUpdate( { user: 'Jason' }, { $push: { data: data }}, { new: true }, function(err, schedule){ // after write, database returns schedule
+          if (err){
+            console.log('could not find user: Jason.  Error: ' + err);
+          } else {
+            console.log('mock data saved');
+            if (callback){ //if a callback was provided, use it, will be 'response'
+              callback.redirect('/tank'); // response.redirect
+            } else { // if no callback provided, return schedule
+              return schedule;
+            }
+          };
+      });
+    }
+  });
+};
+
+// used for eWON access, no longer functional
+// call to generate one eWON data point, save to DB and execute callback (response)
 ScheduleSchema.methods.readEwonOnce = function readEwonOnce(callback){ // callback is executed at end
   console.log('starting readEwonOnce, logging in');
   request('https://m2web.talk2m.com/t2mapi/login?' + // login to get t2msession
