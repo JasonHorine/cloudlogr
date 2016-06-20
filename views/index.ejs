@@ -19,23 +19,13 @@
     <h1 class="center_text">CloudLogr</h1>
     <h2 class="center_text"><a class="a_link" href="/tank" "link to data view">Log Data</a></h2>
     <br>
-    <p>Functionality:  One notable feature on the following page that is not readily apparent is that if you hit start polling, the server spins up a process of polling the eWON API at the indicated interval.  Even if the browser is closed, the server will continue to gather data, storing it in a MongoDB database.  Try it!</p>
+    <p>Functionality:  One notable feature on the following page is how the server polls for data.  Once the server starts polling, it will continue even if the browser is closed.  The polling is handled by a method on the 'schedule' model using setInterval.  Check the <a href="https://github.com/JasonHorine/cloudlogr" title="link to GitHub">schedule.js file to see that code.</a></p>
     <br>
-    <p>And yes, if something in the UI is not readily apparent, that's bad UX.  What infrastructure I've created to date has been designed with UX in mind, but the UI did not receive the attention it could have.</p>
+    <p>To stop the polling process, an API route sets a flag in the database.  The polling process checks the database each time it wakes.  It either polls or calls clearInterval on itself accordingly.</p>
     <br>
-    <p>eWON:  The data on the following page is retrieved from an API graciously provided by eWON.  The tank application is a simulation running on their server in New York.  The site could readily target real hardware behind an eWON VPN router.</p>
+    <p>eWON:  The data on the following page was originally retrieved from a test API provided by eWON.  When that test API expired, I added a method to randomly generate my own simulated data.</p>
     <br>
-    <p>(The following list is what I believe customers of a product of this sort would want from it.  It's a preliminary marketing spec.  The items seem feasible, but are NOT implemented.)</p>
-    <ul>
-      <li>easy to configure</li>
-      <li>quadruple redundancy of your data</li>
-      <li>redundant servers across the globe</li>
-      <li>upload your tag database for setup</li>
-      <li>got internet? got data!</li>
-      <li>online historical data visualization</li>
-      <li>text and email alerts</li>
-      <li>email csv data retrieval</li>
-    </ul>
+    <p>This project was completed for my Web Dev class at General Assembly.  I hope to eventually turn this into a real application.  It is a crude mock-up in its current form.</p>
   </div>
 </body>
 </html>
