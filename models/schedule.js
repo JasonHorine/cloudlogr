@@ -12,7 +12,7 @@ var ScheduleSchema = new mongoose.Schema({  // create a schema
   dataTagname: String,
   dataPollRate: {
    type: Number,
-   min: 5000, // 5 seconds
+   min: 3000, // 3 seconds
    max: 60000, // 60 seconds, actual max possible is 2147483647, ~28 days
    required: true },
   dataPollingState: Boolean, // process sets or resets this when polling changes
@@ -76,7 +76,14 @@ ScheduleSchema.methods.readMockOnce = function readMockOnce(callback){ // callba
       var lastEntry = schedule.data.slice(-1)[0];
       var elapsed = clock - lastEntry.timestamp; // dif between now and last entry in milliseconds
       var lastValue = lastEntry.value;
-      value = lastEntry.value + ((Math.random() - 0.5) * 0.000278 * elapsed); // Assume vessel takes 2hr to fill or drain. (720,000ms).  This formula sets that as the maximum rate of change possible.  Change is randomized with pos and neg equally likely.
+      var centerBias = 0
+      // create a bias to tend to drive the result toward the center, 50
+      if (lastEntry.value > 50){
+        centerBias = -0.6;
+      } else {
+        centerBias = -0.4;
+      };
+      value = lastEntry.value + ((Math.random() + centerBias) * 0.000278 * elapsed); // Assume vessel takes 2hr to fill or drain. (720,000ms).  This formula sets that as the maximum rate of change possible.  Change is randomized with pos and neg equally likely.
       (value > 100) ? value = 100 : value = value; // clamp to <= 100
       (value < 0) ? value = 0 : value = value; // clamp to >= 0
       var data = { // the new data entry object for the DB

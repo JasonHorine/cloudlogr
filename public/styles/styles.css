@@ -18,6 +18,11 @@ table, th, td, div.control_group {
   background: #efefef;
   margin: 0 auto;
 }
+canvas#canvas {
+  border: 2px solid black;
+  background: #efefef;
+}
+
 td#td_date {
   width: 330px
 }

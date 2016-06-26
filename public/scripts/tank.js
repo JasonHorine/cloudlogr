@@ -60,18 +60,41 @@ function redrawTable(data){
       "<td>" + (dataEntry.eWONMessage || '') + "</td>"
     );
   })
+  copyTableDataToChart(); // copy the data to the chart
+  window.myLine.update(); // redraw the chart
 }
 
-// <% schedule.data = schedule.data.reverse(); %><!--want newest first to rendering table-->
-// <% schedule.data.slice(0,10).forEach(function(dataEntry){ %>
-//   <tbody>
-//     <tr>
-//       <td ><%= dataEntry.value %></td>
-//       <td ><%= dataEntry.timestamp %></td>
-//       <td ><%= dataEntry.status ? 'good' : dataEntry.statusCode %></td>
-//       <td ><%= dataEntry.eWONMessage %></td>
-//     </tr>
-//   </tbody>
+function copyTableDataToChart(){
+  console.log(jQuery('tbody tr td:first-child'));
+  console.log('before ' + config.data.dataasets);
+  jQuery('tbody tr td:first-child').each(function(i, element){
+    console.log(Number(element.innerHTML));
+    config.data.datasets[0].data[i] = Number(element.innerHTML);
+  });
+  console.log('after ' + config.data.dataasets);
+
+// var rows = $("tbody tr",$("#tblVersions")).map(function() {
+//     return [$("td:eq(0) input:checkbox:checked",this).map(function() {
+//       return this.innerHTML;
+//     }).get()];
+//   }).get();
+
+//jQuery('tbody tr').each(console.log(jQuery('td:first-child')));
+
+//console.log($('table tr > td:nth-child(1)').html())
+};//.forEach(function(stringValue, i){ // get each first TD tag
+//  config.data.datasets[0].data[i]= Number(stringValue); // place it into the chart line
+//});
+
+//     $.each(config.data.datasets, function(i, dataset) {
+//         dataset.data = dataset.data.map(function() {
+//             return randomScalingFactor();
+//         });
+
+//     });
+
+//     window.myLine.update();
+//)};
 
 $(function(){ // after DOM loads,
   if ($("#data_polling_state").html() === 'Active'){ //if DOM shows active, start polling
@@ -80,3 +103,146 @@ $(function(){ // after DOM loads,
     timerID = setInterval(getData, pollRate); // start polling the server
   }
 })
+
+// chart.js
+var XAXIS = ["0", "t-1", "t-2", "t-3", "t-4", "t-5", "t-6", "t-7", "t-8", "t-9"];
+
+var randomScalingFactor = function() {
+    return Math.round(Math.random() * 100);
+    //return 0;
+};
+var randomColorFactor = function() {
+    return Math.round(Math.random() * 255);
+};
+var randomColor = function(opacity) {
+    return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
+};
+
+Chart.defaults.global.defaultFontColor = '#000';
+Chart.defaults.global.defaultFontFamily = "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif";
+Chart.defaults.global.defaultFontSize = 18;
+Chart.defaults.global.defaultFontStyle = 'normal';
+
+var config = {
+    type: 'line',
+    data: {
+        labels: ["0", "t-1", "t-2", "t-3", "t-4", "t-5", "t-6", "t-7", "t-8", "t-9"],
+        datasets: [{
+            label: jQuery('caption h3').html(), // pick it out of the DOM
+            data: Array(), // new empty array
+            fill: true,
+            borderDash: [5, 1],
+            borderColor: 'rgba(255,255,0,1.0)', // line
+            backgroundColor: 'rgba(10,10,255,0.5)', // line fill
+            pointBorderColor: 'rgba(255,255,255,1.0)', // dot border
+            pointBackgroundColor: 'rgba(255,255,255,0.5)', // dot fill
+            pointBorderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        title:{
+            display: false
+        },
+        tooltips: {
+            mode: 'label',
+        },
+        hover: {
+            mode: 'label'
+        },
+        scales: {
+            xAxes: [{
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Time'
+                }
+            }],
+            yAxes: [{
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Value'
+                },
+                ticks: { // fix the scale at 0-100
+                  max: 100,
+                  min: 0
+                }
+            }]
+        }
+    }
+};
+console.log("var config done: " + config.data.datasets[0].data);
+
+// $.each(config.data.datasets, function(i, dataset) {
+//     dataset.borderColor = randomColor(0.4);
+//     dataset.backgroundColor = randomColor(0.5);
+//     dataset.pointBorderColor = randomColor(0.7);
+//     dataset.pointBackgroundColor = randomColor(0.5);
+//     dataset.pointBorderWidth = 1;
+// });
+
+window.onload = function() {
+    copyTableDataToChart();
+    console.log("getTableDataToChart Ran");
+    var ctx = document.getElementById("canvas").getContext("2d");
+    window.myLine = new Chart(ctx, config);
+};
+
+// $('#randomizeData').click(function() {
+//     $.each(config.data.datasets, function(i, dataset) {
+//         dataset.data = dataset.data.map(function() {
+//             return randomScalingFactor();
+//         });
+//     });
+
+//     window.myLine.update();
+// });
+
+// $('#addDataset').click(function() {
+//     var newDataset = {
+//         label: 'Dataset ' + config.data.datasets.length,
+//         borderColor: randomColor(0.4),
+//         backgroundColor: randomColor(0.5),
+//         pointBorderColor: randomColor(0.7),
+//         pointBackgroundColor: randomColor(0.5),
+//         pointBorderWidth: 1,
+//         data: [],
+//     };
+
+//     for (var index = 0; index < config.data.labels.length; ++index) {
+//         newDataset.data.push(randomScalingFactor());
+//     }
+
+//     config.data.datasets.push(newDataset);
+//     window.myLine.update();
+// });
+
+// $('#addData').click(function() {
+//     if (config.data.datasets.length > 0) {
+//         var month = XAXIS[config.data.labels.length % XAXIS.length];
+//         config.data.labels.push(month);
+
+//         $.each(config.data.datasets, function(i, dataset) {
+//             dataset.data.push(randomScalingFactor());
+//         });
+
+//         window.myLine.update();
+//     }
+// });
+
+// $('#removeDataset').click(function() {
+//     config.data.datasets.splice(0, 1);
+//     window.myLine.update();
+// });
+
+$('#removeData').click(function() {
+    config.data.labels.splice(-1, 1); // remove the label first
+
+    config.data.datasets.forEach(function(dataset, datasetIndex) {
+        dataset.data.pop();
+    });
+
+    window.myLine.update();
+});
+// chart.js
