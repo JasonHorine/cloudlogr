@@ -1,14 +1,14 @@
 
 html {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-body {
-  font-family: 'Oxygen', Arial, sans-serif;
-  padding: 20px;
   background-image: url("../images/tank_farm.jpg");
   background-size: cover;
   background-repeat: no-repeat;
+}
+body {
+  max-width: 600px;
+  margin: 0px auto;
+  font-family: 'Oxygen', Arial, sans-serif;
+  padding: 20px;
   text-align: center;
 }
 table, th, td, div.control_group {
