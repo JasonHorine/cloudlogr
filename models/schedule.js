@@ -37,27 +37,32 @@ ScheduleSchema.methods.startPolling = function startPolling(){
   //calling set interval returns a timerID, store it, used by clearInterval
   this.timerID = setInterval(function(){ self.pollEwon(); }, this.dataPollRate);
   // this.writeConfig(); // save the state to the DB (need to be callback?)
-  console.log("started polling")
+  console.log("startPolling: started polling")
 };
 
 
 // call to read from eWON, called from .startPolling at an interval
+// if dataPollingStateReq is found to be false:
+// -set dataPollingState to false
+// -clearInterval to stop the polling
 ScheduleSchema.methods.pollEwon = function pollEwon(){
-  console.log("pollEwon running")
+  console.log("pollEwon: running")
   var self = this;
-  Schedule.findOne( { user: self.user, dataAddress: self.dataAddress }, 'dataPollingState', function(err, schedule){
-      if (err) console.log('pollEwon could not find user: Jason.  Error: ' + err);
+  Schedule.findOne( { user: self.user, dataAddress: self.dataAddress }, 'dataPollingStateReq', function(err, schedule){
+      if (err) console.log('pollEwon: could not find user: Jason.  Error: ' + err);
       else{
         // response.send('the schedule is: ' + schedule); works
         // response.render('tank', [ {schedule: "I'm schedule"}, {header: "I'm header"} ]);
-        if (schedule.dataPollingState === true){
-          console.log("pollEwon calling readEwonOnce")
+        if (schedule.dataPollingStateReq === true){
+          console.log("pollEwon: calling readEwonOnce")
           // self.readEwonOnce();
           self.readMockOnce();
         }
         else {
-          clearInterval(self.timerID);
-          console.log("pollEwon stopped polling")
+          clearInterval(self.timerID); // shut down the polling
+          Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: false }, { new: false }, function(err, schedule){ // set the flag in the database that polling has stopped
+            console.log("pollEwon: server polling stopped");
+          });
         }
       };
   });
@@ -74,17 +79,20 @@ ScheduleSchema.methods.readMockOnce = function readMockOnce(callback){ // callba
     } else { // calculate the new value to store and return
       var clock = new Date();
       var lastEntry = schedule.data.slice(-1)[0];
-      var elapsed = clock - lastEntry.timestamp; // dif between now and last entry in milliseconds
+      //var elapsed = clock - lastEntry.timestamp; // dif between now and last entry in milliseconds
+      //var maxElapsed = 1800000; // 30 minutes in milliseconds
+      //(elapsed > maxElapsed) ? elapsed = maxElapsed : elapsed = elapsed; // clamp elapsed to 30 minutes, tends to peg a rail upon waking otherwise
       var lastValue = lastEntry.value;
       var centerBias = 0
       // create a bias to tend to drive the result toward the center, 50
       if (lastEntry.value > 50){
-        centerBias = -0.6;
+        centerBias = -0.55;
       } else {
-        centerBias = -0.4;
+        centerBias = -0.45;
       };
-      value = lastEntry.value + ((Math.random() + centerBias) * 0.000278 * elapsed); // Assume vessel takes 2hr to fill or drain. (720,000ms).  This formula sets that as the maximum rate of change possible.  Change is randomized with pos and neg equally likely.
-      (value > 100) ? value = 100 : value = value; // clamp to <= 100
+      //value = lastEntry.value + ((Math.random() + centerBias) * 0.000278 * elapsed); // Assume vessel takes 2hr to fill or drain. (720,000ms).  This formula sets that as the maximum rate of change possible.  Change is randomized with pos and neg equally likely.
+      value = lastEntry.value + ((Math.random() + centerBias) * 10);
+      (value > 100) ? value = 100 : value = value; // clamp to <=
       (value < 0) ? value = 0 : value = value; // clamp to >= 0
       var data = { // the new data entry object for the DB
         value: value,

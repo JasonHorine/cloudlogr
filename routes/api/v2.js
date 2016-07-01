@@ -38,43 +38,49 @@ router.post('/newSchedule', function(request, response) {
 });
 
 //----------------------------------------------//
-//    API route to start polling of eWON        //
+//    API route to start polling
 //----------------------------------------------//
 router.post('/startPolling', function(request, response) {
-  // check for dataPollingState == false, if found change to true and start polling, if not found, error
-  Schedule.findOneAndUpdate( { user: 'Jason', dataPollingState: false }, { dataPollingState: true }, {new: true}, function(err, schedule){ // after write, database returns schedule
+  // check for dataPollingState == false, if found:
+  // -change dataPollingState = true
+  // -change dataPollingStateReq = true
+  // -start polling if findOne returns a database object
+  Schedule.findOneAndUpdate( { user: 'Jason', dataPollingState: false }, { dataPollingState: true, dataPollingStateReq: true }, {new: true}, function(err, schedule){ // after write, database returns schedule
       // err is returned if error, else updated schedule is
       // console.log(schedule);
       if (schedule){ // if update worked, start polling
-        schedule.readEwonOnce(); // read immediately
+        schedule.readMockOnce(); // read immediately
         schedule.startPolling(); // start polling, first will be in dataPollRate ms
-        console.log('hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
-      };
-      response.redirect('/tank');
+        console.log('Hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
+        response.send({dataPollingStateReq: schedule.dataPollingStateReq, dataPollingState: schedule.dataPollingState, dataPollRate: schedule.dataPollRate}); // send polling stats;
+      } else {
+        console.log('Hit startPolling.  Err: ' + err);
+        response.send('no schedule');
+      }
     });
 });
 
 
 //----------------------------------------------//
-//    API route to stop polling of eWON         //
+//    API route to stop polling
 //----------------------------------------------//
-router.post('/stopPolling', function(request, response) { // change dataPollingState to false in DB
-  Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: false }, { new: true }, function(err, schedule){ // after write, database returns schedule
+router.post('/stopPolling', function(request, response) { // change dataPollingStateReq to false in DB
+  Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingStateReq: false }, { new: true }, function(err, schedule){ // after write, database returns schedule
       // err is returned if error, else updated schedule is
       if (schedule){ // if a matching schedule is found in the DB,
         response.redirect('/tank');
-        console.log('hit stopPolling. dataPollingState is now: ' + schedule.dataPollingState);
+        console.log('hit stopPolling. dataPollingStateReq is now: ' + schedule.dataPollingStateReq);
       }
       else {
         response.send(false);
-        console.log('hit stopPolling. dataPollingState is now: ' + schedule.dataPollingState);
+        console.log('hit stopPolling. dataPollingStateReq is now: ' + schedule.dataPollingStateReq);
       };
   });
 });
 
 
 //----------------------------------------------//
-//    API route to change poll rate of eWON     //
+//    API route to change poll rate
 //----------------------------------------------//
 // post to /api/vi/changePollRate with newDataPollRate: in body
 // if not already polling, change poll rate and return new poll rate
@@ -86,7 +92,7 @@ router.post('/changePollRate', function(request, response) {
       // err is returned if error, else updated schedule is
       response.redirect('/tank');
       if (schedule){ // if the write succeeded
-        console.log('hit changePollRate. dataPollRtate is now: ' + schedule.dataPollRate + 'ms');
+        console.log('hit changePollRate. dataPollRate is now: ' + schedule.dataPollRate + 'ms');
       } else {
         console.log('hit changePollRate. did not update');
       };
@@ -95,7 +101,7 @@ router.post('/changePollRate', function(request, response) {
 
 
 //----------------------------------------------//
-//    API route to get one eWON reading         //
+//    API route to get one reading
 //----------------------------------------------//
  router.get('/oneReading', function(request, response){
    Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get entry with user: Jason from DB
@@ -116,7 +122,7 @@ router.get('/data', function(request, response){
   Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get entry with user: Jason from DB
     if (schedule) {
       schedule.data = schedule.data.reverse();
-      response.send({data: schedule.data.slice(0, 10)});  // send elements 0-9
+      response.send({data: schedule.data.slice(0, 10), dataPollingStateReq: schedule.dataPollingStateReq, dataPollingState: schedule.dataPollingState, dataPollRate: schedule.dataPollRate});  // send elements 0-9
     } else { response.send('could not find user: Jason.  Error: ' + err);
     };
   });
@@ -124,11 +130,22 @@ router.get('/data', function(request, response){
 
 
 //----------------------------------------------//
+//    API route to reset schedule flags         //
+//----------------------------------------------//
+router.post('/resetFlags', function(request, response) {
+  //response.send(request.body);
+  Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: false, dataPollingStateReq: false }, function(err, schedule){ // after write, database returns schedule
+      // err is returned if error, else updated schedule is
+    response.redirect('/tank');
+  });
+});
+
+//----------------------------------------------//
 //    API route to update settings of schedule  //
 //----------------------------------------------//
 
 
 //----------------------------------------------//
-//    API route to change the process inputs    //
+//    API route to change the process inputs    //  open or close valves
 //----------------------------------------------//
 

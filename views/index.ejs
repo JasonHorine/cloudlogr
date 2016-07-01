@@ -19,13 +19,15 @@
     <h1 class="center_text">CloudLogr</h1>
     <h2 class="center_text"><a class="a_link" href="/tank" "link to data view">Log Data</a></h2>
     <br>
+    <p>This is a mock-up of a data-logging server.  The root idea is that a server could be configured to pull data (acting as a ModbusTCP client) from an endpoint device (a ModbusTCP server), store it in a cloud database, and users could have easy access to that data.</p>
+    <br>
     <p>Functionality:  One notable feature on the following page is how the server polls for data.  Once the server starts polling, it will continue even if the browser is closed.  The polling is handled by a method on the 'schedule' model using setInterval.  Check the <a href="https://github.com/JasonHorine/cloudlogr" title="link to GitHub">schedule.js file to see that code.</a></p>
     <br>
     <p>To stop the polling process, an API route sets a flag in the database.  The polling process checks the database each time it wakes.  It either polls or calls clearInterval on itself accordingly.</p>
     <br>
-    <p>eWON:  The data on the following page was originally retrieved from a test API provided by eWON.  When that test API expired, I added a method to randomly generate my own simulated data.</p>
+    <p>There is one big problem in how this is coded.  The state machine of the polling using flags is a bit frail and not too hard to trip up.  I am still working to make it more robust.</p>
     <br>
-    <p>This project was completed for my Web Dev class at General Assembly.  I hope to eventually turn this into a real application.  It is a crude mock-up in its current form.</p>
+    <p>eWON:  The data on the following page was originally retrieved from a test API provided by eWON.  When that test API expired, I added a method to generate simulated data within the server.</p>
   </div>
 </body>
 </html>

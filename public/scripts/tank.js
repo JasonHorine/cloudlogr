@@ -7,27 +7,41 @@ function clearText(thefield){
   }
 }
 
+
 var timerID = null
-var pollDBData = function(){
+var pollDBData = function(){ // Start Polling button pressed
   if ($("#data_polling_state").html() === 'Inactive'){ //if DOM shows inactive state
     $.ajax({ // method to tell server to start polling
       url: '/api/v2/startPolling',
       method: 'POST'
-    });
-    $("#data_polling_state").html("Active");
-    console.log('polldata!');
-    var pollRate = Number($("#data_poll_rate").html()) * 1000; // get the poll rate in seconds from Dom, convert to ms and store
-    console.log("poll rate: " + pollRate);
-    timerID = setInterval(getData, pollRate);
-    console.log('timerID assigned: ' + timerID);
-  } else { // polling is aleady active
-   clearInterval(timerID);
-  }
+    })
+    .done(function(data){ // if the server repsonds without error
+      if (data === "no schedule"){
+        // do nothing, would be better to show error message to user
+      } else {  //polling has started
+        $("#data_polling_state").html("Active").removeClass("stop").addClass("go");
+        $(".poll_rate_change").hide();
+        $("#start_polling_button").hide();
+        $("#stop_polling_button").show();
+        $("#get_one_reading_button").hide();
+        //console.log('polldata!');
+        var pollRate = Number($("#data_poll_rate").html()) * 1000; // get the poll rate in seconds from Dom, convert to ms and store
+        //console.log("poll rate: " + pollRate);
+        timerID = setInterval(getData, pollRate);
+        //console.log('timerID assigned: ' + timerID);
+      }
+    })
+    .always(function(data){
+      //console.log("pollDBData got: " + data);
+    })
+  } //else { // polling is aleady active
+  //  clearInterval(timerID);
+  // }
 }
 
 
 function getData(){
-  console.log('getData started');
+  //console.log('getData started');
   if ($("#data_polling_state").html() === 'Inactive'){ //if DOM shows inactive, stop
     clearInterval(timerID);
   } else {
@@ -36,11 +50,16 @@ function getData(){
       method: 'GET'
     })
     .success (function(data) { // when it’s done, 'data' will contain the DB data object
-      console.log('got data' + data);
+      //console.log('got data' + data);
+      // if data returns with polling status req false and there is a setInterval running, need to stop setInterval process
+      if (timerID && !data.dataPollingStateReq){
+        clearInterval(timerID);   // stop the browser polling
+        //console.log("getData stopped due to timerID && !data.dataPollingStateReq " + timerID + " " + data.dataPollingStateReq);
+      }
       redrawTable(data);
     })
     .fail (function(jqXHR, textStatus, errorThrown) { // if it fails, this data arrives, execute next line
-      console.log( 'GET /data uh oh' );
+      //console.log( 'GET /data uh oh' );
     })
     .always (function() {
     })
@@ -49,10 +68,10 @@ function getData(){
 
 
 function redrawTable(data){
-  console.log("redrawTable running");
-  console.log(data.data[0]);
+  //console.log("redrawTable running");
+  //console.log(data.data[0]);
   data.data.forEach(function(dataEntry, index){
-    console.log(dataEntry.value);
+    //console.log(dataEntry.value);
     $( "tbody tr:nth-child(" + (1+index) +")" ).html(
       "<td>" + dataEntry.value.toFixed(2) + "</td>" +
       "<td>" + dataEntry.timestamp + "</td>" +
@@ -65,13 +84,13 @@ function redrawTable(data){
 }
 
 function copyTableDataToChart(){
-  console.log(jQuery('tbody tr td:first-child'));
-  console.log('before ' + config.data.dataasets);
+  //console.log(jQuery('tbody tr td:first-child'));
+  //console.log('before ' + config.data.dataasets);
   jQuery('tbody tr td:first-child').each(function(i, element){
-    console.log(Number(element.innerHTML));
+    //console.log(Number(element.innerHTML));
     config.data.datasets[0].data[i] = Number(element.innerHTML);
   });
-  console.log('after ' + config.data.dataasets);
+  //console.log('after ' + config.data.dataasets);
 
 // var rows = $("tbody tr",$("#tblVersions")).map(function() {
 //     return [$("td:eq(0) input:checkbox:checked",this).map(function() {
@@ -98,9 +117,20 @@ function copyTableDataToChart(){
 
 $(function(){ // after DOM loads,
   if ($("#data_polling_state").html() === 'Active'){ //if DOM shows active, start polling
-    var pollRate = Number($("#data_poll_rate").html()) * 1000; // get the poll rate in seconds from Dom, convert to ms and store
-    console.log("poll rate: " + pollRate);
+    var pollRate = Number($("#data_poll_rate").html()) * 1000; // get the poll rate in seconds from DOM, convert to ms and store
+    // console.log("poll rate: " + pollRate);
     timerID = setInterval(getData, pollRate); // start polling the server
+    $("#data_polling_state").removeClass("stop").addClass("go");
+    $(".poll_rate_change").hide();
+    $("#start_polling_button").hide();
+    $("#stop_polling_button").show();
+    $("#get_one_reading_button").hide();
+  } else {
+    $("#data_polling_state").removeClass("go").addClass("stop");
+    $(".poll_rate_change").show();
+    $("#start_polling_button").show();
+    $("#stop_polling_button").hide();
+    $("#get_one_reading_button").show();
   }
 })
 
@@ -172,7 +202,7 @@ var config = {
         }
     }
 };
-console.log("var config done: " + config.data.datasets[0].data);
+//console.log("var config done: " + config.data.datasets[0].data);
 
 // $.each(config.data.datasets, function(i, dataset) {
 //     dataset.borderColor = randomColor(0.4);
@@ -184,7 +214,7 @@ console.log("var config done: " + config.data.datasets[0].data);
 
 window.onload = function() {
     copyTableDataToChart();
-    console.log("getTableDataToChart Ran");
+    // console.log("getTableDataToChart Ran");
     var ctx = document.getElementById("canvas").getContext("2d");
     window.myLine = new Chart(ctx, config);
 };
@@ -236,13 +266,13 @@ window.onload = function() {
 //     window.myLine.update();
 // });
 
-$('#removeData').click(function() {
-    config.data.labels.splice(-1, 1); // remove the label first
+// $('#removeData').click(function() {
+//     config.data.labels.splice(-1, 1); // remove the label first
 
-    config.data.datasets.forEach(function(dataset, datasetIndex) {
-        dataset.data.pop();
-    });
+//     config.data.datasets.forEach(function(dataset, datasetIndex) {
+//         dataset.data.pop();
+//     });
 
-    window.myLine.update();
-});
+//     window.myLine.update();
+// });
 // chart.js

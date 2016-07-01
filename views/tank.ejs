@@ -43,24 +43,25 @@
       <span>Poll Rate: </span>
       <span id="data_poll_rate"><%= schedule.dataPollRate/1000 %></span>
       <span> seconds</span>
-      <form class="inline" action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
+      <form class="inline poll_rate_change" action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
         <input class="short" type="text" name="newDataPollRate" value="3 - 60" onFocus="clearText(this)">
         <input class="button_link" type="submit" value="Change">
       </form>
     </div>
     <div class="control_group">
       <span>Polling: </span>
-      <span id="data_polling_state"><%= schedule.dataPollingState ? 'Active' : 'Inactive' %></span>
-      <button class="inline button_link" type="button" onclick="pollDBData()">Start Polling</button>
-      <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
-        <input type="hidden">
-        <input class="button_link" type="submit" value="Stop Polling">
-      </form>
+      <span id="data_polling_state"><%= schedule.dataPollingStateReq ? 'Active' : 'Inactive' %></span>
+
     </div>
     <div class="control_group">
-      <form action="/api/v2/oneReading" method="get" accept-charset="utf-8">
+      <button class="inline button_link go" id="start_polling_button" style="display: none;" type="button" onclick="pollDBData()">Start Polling</button>
+      <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
         <input type="hidden">
-        <input class="button_link" type="submit" value="Get One Reading">
+        <input class="button_link stop" id="stop_polling_button" style="display: none;" type="submit" value="Stop Polling">
+      </form>
+      <form class="inline" action="/api/v2/oneReading" method="get" accept-charset="utf-8">
+        <input type="hidden">
+        <input class="button_link" id="get_one_reading_button" style="display: none;" type="submit" value="Get One Reading">
       </form>
     </div>
     </caption>
