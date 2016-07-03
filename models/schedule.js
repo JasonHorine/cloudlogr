@@ -107,7 +107,8 @@ ScheduleSchema.methods.readMockOnce = function readMockOnce(callback){ // callba
           } else {
             console.log('mock data saved');
             if (callback){ //if a callback was provided, use it, will be 'response'
-              callback.redirect('/tank'); // response.redirect
+              schedule.data = schedule.data.reverse();
+              callback.send({data: schedule.data.slice(0, 10), dataPollingStateReq: schedule.dataPollingStateReq, dataPollingState: schedule.dataPollingState, dataPollRate: schedule.dataPollRate});
             } else { // if no callback provided, return schedule
               return schedule;
             }

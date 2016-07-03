@@ -11,11 +11,12 @@ function clearText(thefield){
 var timerID = null
 var pollDBData = function(){ // Start Polling button pressed
   if ($("#data_polling_state").html() === 'Inactive'){ //if DOM shows inactive state
-    $.ajax({ // method to tell server to start polling
+    $.ajax({ // API route to tell server to start polling
       url: '/api/v2/startPolling',
       method: 'POST'
     })
     .done(function(data){ // if the server repsonds without error
+      console.log("pollDBData.done got: " + data);
       if (data === "no schedule"){
         // do nothing, would be better to show error message to user
       } else {  //polling has started
@@ -29,16 +30,58 @@ var pollDBData = function(){ // Start Polling button pressed
         //console.log("poll rate: " + pollRate);
         timerID = setInterval(getData, pollRate);
         //console.log('timerID assigned: ' + timerID);
+        redrawTable(data); // if object returned is data, pass it to redrawTable function
       }
     })
     .always(function(data){
-      //console.log("pollDBData got: " + data);
+      console.log("pollDBData got: " + data);
     })
   } //else { // polling is aleady active
   //  clearInterval(timerID);
   // }
 }
 
+var getOneReading = function(){
+  $.ajax({ // method to tell server to start polling
+    url: '/api/v2/oneReading',
+    method: 'GET'
+  })
+  .done(function(data){ // data is the server's response
+    console.log("getOneReading.done got: " + data);
+    if (data === "no schedule"){
+        // do nothing, would be better to show error message to user
+    } else {  //polling has started
+      redrawTable(data); // if object returned is data, pass it to redrawTable function
+    }
+  })
+}
+
+var stopPolling = function(){
+  if ($("#data_polling_state").html() === 'Active'){ //if DOM shows active state
+    $.ajax({ // API route to tell server to stop polling
+      url: '/api/v2/stopPolling',
+      method: 'POST'
+    })
+    .done(function(data){ // if the server repsonds without error
+      console.log("pollDBData.done got: " + data);
+      if (data === false){
+        // do nothing, would be better to show error message to user
+      } else {  //polling has stopped
+        $("#data_polling_state").html("Inactive").removeClass("go").addClass("stop");
+        $(".poll_rate_change").show();
+        $("#start_polling_button").show();
+        $("#stop_polling_button").hide();
+        $("#get_one_reading_button").show();
+      }
+    })
+    .always(function(data){
+      console.log("pollDBData got: " + data);
+      clearInterval(timerID); // stop the browser polling
+    })
+  } //else { // polling is aleady active
+  //  clearInterval(timerID);
+  // }
+}
 
 function getData(){
   //console.log('getData started');

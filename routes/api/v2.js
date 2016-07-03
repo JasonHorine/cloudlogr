@@ -49,10 +49,10 @@ router.post('/startPolling', function(request, response) {
       // err is returned if error, else updated schedule is
       // console.log(schedule);
       if (schedule){ // if update worked, start polling
-        schedule.readMockOnce(); // read immediately
+        schedule.readMockOnce(response); // read immediately and send reading as the response
         schedule.startPolling(); // start polling, first will be in dataPollRate ms
         console.log('Hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
-        response.send({dataPollingStateReq: schedule.dataPollingStateReq, dataPollingState: schedule.dataPollingState, dataPollRate: schedule.dataPollRate}); // send polling stats;
+        //response.send({dataPollingStateReq: schedule.dataPollingStateReq, dataPollingState: schedule.dataPollingState, dataPollRate: schedule.dataPollRate}); // send polling stats;
       } else {
         console.log('Hit startPolling.  Err: ' + err);
         response.send('no schedule');
@@ -68,7 +68,7 @@ router.post('/stopPolling', function(request, response) { // change dataPollingS
   Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingStateReq: false }, { new: true }, function(err, schedule){ // after write, database returns schedule
       // err is returned if error, else updated schedule is
       if (schedule){ // if a matching schedule is found in the DB,
-        response.redirect('/tank');
+        response.send({dataPollingStateReq: schedule.dataPollingStateReq, dataPollingState: schedule.dataPollingState, dataPollRate: schedule.dataPollRate});
         console.log('hit stopPolling. dataPollingStateReq is now: ' + schedule.dataPollingStateReq);
       }
       else {
@@ -103,11 +103,12 @@ router.post('/changePollRate', function(request, response) {
 //----------------------------------------------//
 //    API route to get one reading
 //----------------------------------------------//
+// hit via AJAX call
  router.get('/oneReading', function(request, response){
    Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get entry with user: Jason from DB
      if (schedule) {
        // schedule.readEwonOnce(response); // will read eWON, save the data to the DB and redirect to /tank
-       schedule.readMockOnce(response); //
+       schedule.readMockOnce(response); // SPA behavior gets one reading and returns data to AJAX call from brower, which redraws the table
      } else { response.send('could not find user: Jason.  Error: ' + err);
        // response.send('the schedule is: ' + schedule); works
      };

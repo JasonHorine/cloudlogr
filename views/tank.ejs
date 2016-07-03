@@ -55,14 +55,16 @@
     </div>
     <div class="control_group">
       <button class="inline button_link go" id="start_polling_button" style="display: none;" type="button" onclick="pollDBData()">Start Polling</button>
-      <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
+
+      <button class="inline button_link stop" id="stop_polling_button" style="display: none;" type="button" onclick="stopPolling()">Stop Polling</button>
+
+      <!-- <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
         <input type="hidden">
         <input class="button_link stop" id="stop_polling_button" style="display: none;" type="submit" value="Stop Polling">
-      </form>
-      <form class="inline" action="/api/v2/oneReading" method="get" accept-charset="utf-8">
-        <input type="hidden">
-        <input class="button_link" id="get_one_reading_button" style="display: none;" type="submit" value="Get One Reading">
-      </form>
+      </form> -->
+
+
+      <button class="inline button_link" id="get_one_reading_button" style="display: none;" type="button" onclick="getOneReading()">Get One Reading</button>
     </div>
     </caption>
     <thead>
