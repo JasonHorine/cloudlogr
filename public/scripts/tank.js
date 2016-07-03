@@ -116,7 +116,7 @@ function redrawTable(data){
   data.data.forEach(function(dataEntry, index){
     //console.log(dataEntry.value);
     $( "tbody tr:nth-child(" + (1+index) +")" ).html(
-      "<td>" + dataEntry.value.toFixed(2) + "</td>" +
+      "<td>" + dataEntry.value.toFixed(1) + "</td>" +
       "<td>" + dataEntry.timestamp + "</td>" +
       "<td>" + (dataEntry.status ? 'good' : dataEntry.statusCode) + "</td>" +
       "<td>" + (dataEntry.eWONMessage || '') + "</td>"
