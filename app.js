@@ -17,6 +17,7 @@ mongoose.connect(process.env.DB_CONN_CLOUDLOGR); // database on mlab via environ
 
 var tankRouter = require("./routes/tankdata"); // tankRouter uses ./routes/tankdata.js file
 app.use('/tank', tankRouter);  // anything to /tank use tankRouter
+app.use('/', tankRouter);  // anything to / use tankRouter
 
 var apiRouterv1 = require("./routes/api/v1"); // apiRouterv1 uses ./routes/api/v1.js file
 app.use('/api/v1', apiRouterv1);  // anything to /api/v1 use apiRouterv1
@@ -30,9 +31,9 @@ console.log('Server started on ' + port);
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
-app.get('/', function(request, response) {
- response.render('index');
-});
+//app.get('/', function(request, response) {
+// response.render('index');
+//});
 
 //middleware
 app.use(function(request, response, next) {

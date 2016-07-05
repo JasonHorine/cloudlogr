@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- reset -->
+  <link  href="styles/reset.css" rel="stylesheet">
+
+  <meta charset="utf-8">
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <link rel="stylesheet" href="styles/styles.css">
+  <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+  <link rel="icon" href="./images/cl_icon.png"/>
+  <title>CloudLogr</title>
+</head>
+<body>
+  <header id="header">
+    <a class="button_link relative" href="/tank">
+      Home
+    </a>
+  </header><!-- /header -->
+  <div class="wrapper">
+    <h1 class="center_text">CloudLogr</h1>
+    <br>
+    <p>This site is a mock-up of a data-logging server.  The idea is that a server (acting as a ModbusTCP client) could be configured to pull data from an endpoint device (a ModbusTCP server), store the data in a cloud database, and users could have easy access to that data from anywhere.</p>
+    <br>
+    <p>If that sounds scary to you, you're right.  At a minimum, it would all need to be done through VPN routers to protect the endpoints.  There are VPN Node modules, but none are installed.  The data shown today is not from an actual ModbusTCP client.</p>
+    <br>
+    <p>Functionality:  One notable feature on the following page is how the server polls for data.  Once the server starts polling, it will continue even if the browser is closed.  The polling is handled by a method on the 'schedule' model using setInterval.  Check the <a href="https://github.com/JasonHorine/cloudlogr" title="link to GitHub">schedule.js file to see that code.</a></p>
+    <br>
+    <p>To stop the polling process, an API route sets a flag in the database.  The setInterval process checks the database each time it wakes.  Based on the state of the flag, it either polls or calls clearInterval on itself.</p>
+    <br>
+    <p>There is one big problem in how this is coded.  The state machine's use of a database flag is a bit frail and not too hard to trip up.  I am still working to make it more robust.</p>
+    <br>
+    <p>eWON:  The data for this application was originally retrieved from a test API provided by eWON.  When that test API expired, I added a method to generate simulated data within the server.</p>
+  </div>
+</body>
+</html>
+
+
