@@ -80,7 +80,8 @@
       <% schedule.data.slice(0,10).forEach(function(dataEntry){ %> <!-- build the table from 10 most recent entries data -->
         <tr>
           <td ><%= dataEntry.value.toFixed(1) %></td>  <!-- from float to one decimal place string -->
-          <td id="td_date"><%= dataEntry.timestamp %></td>
+          <td id="td_date"><%= moment(dataEntry.timestamp).format("dd, MMM DD hh:mm:ss A") %></td>
+          <!-- <td id="td_date"><%= dataEntry.timestamp %></td> -->
           <td ><%= dataEntry.status ? 'good' : dataEntry.statusCode %></td>
           <td ><%= dataEntry.eWONMessage %></td>
         </tr>
@@ -106,7 +107,7 @@
     console.log('Connected on front end.');
 });
   </script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js" type="text/javascript" charset="utf-8" async defer></script>
   <script src="/scripts/tank.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>
 </html>
