@@ -25,9 +25,9 @@
     <br>
     <p>This site is a mock-up of a data-logging server.  The idea is that a server (acting as a ModbusTCP client) could be configured to pull data from an endpoint device (a ModbusTCP server), store the data in a cloud database, and users could have easy access to that data from anywhere.</p>
     <br>
-    <p>If that sounds scary to you, you're right.  At a minimum, it would all need to be done through VPN routers to protect the endpoints.  There are VPN Node modules, but none are installed.  The data shown today is not from an actual ModbusTCP client.</p>
+    <p>If that sounds scary to you, you're right.  At a minimum, it would all need to be done through VPN routers to protect the endpoints.  There are VPN Node modules, but none are installed here.  The data shown today is not from an actual ModbusTCP client.</p>
     <br>
-    <p>Functionality:  One notable feature on the following page is how the server polls for data.  Once the server starts polling, it will continue even if the browser is closed.  The polling is handled by a method on the 'schedule' model using setInterval.  Check the <a href="https://github.com/JasonHorine/cloudlogr" title="link to GitHub">schedule.js file to see that code.</a></p>
+    <p>Functionality:  One notable feature of this site is the process by which the server polls for data.  Once the server starts polling, it will continue even if the browser is closed.  (Heroku will timeout and stop the process, however)  The polling is handled by a method on the 'schedule' model using setInterval.  Check the <a href="https://github.com/JasonHorine/cloudlogr" title="link to GitHub">schedule.js file to see that code.</a></p>
     <br>
     <p>To stop the polling process, an API route sets a flag in the database.  The setInterval process checks the database each time it wakes.  Based on the state of the flag, it either polls or calls clearInterval on itself.</p>
     <br>
