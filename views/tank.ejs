@@ -70,6 +70,7 @@
     <thead>
       <tr>
         <th colspan="" rowspan="" headers="" scope="">Value</th>
+        <th colspan="" rowspan="" headers="" scope="">Time</th>
         <th colspan="" rowspan="" headers="" scope="">Timestamp</th>
         <th colspan="" rowspan="" headers="" scope="">Read Status</th>
         <th colspan="" rowspan="" headers="" scope="">Error Message</th>
@@ -77,9 +78,10 @@
     </thead>
     <tbody>
       <% schedule.data = schedule.data.reverse(); %><!--want newest first for rendering table-->
-      <% schedule.data.slice(0,10).forEach(function(dataEntry){ %> <!-- build the table from 10 most recent entries data -->
+      <% schedule.data.slice(0,10).forEach(function(dataEntry, index){ %> <!-- build the table from 10 most recent entries data -->
         <tr>
-          <td ><%= dataEntry.value.toFixed(1) %></td>  <!-- from float to one decimal place string -->
+          <td ><%= dataEntry.value.toFixed(1) %></td>  <!-- float to one decimal place string -->
+          <td ><%= (index === 0) ? "0" : "t-" + index; %></td>
           <td id="td_date"><%= moment(dataEntry.timestamp).format("dd, MMM DD hh:mm:ss A") %></td>
           <!-- <td id="td_date"><%= dataEntry.timestamp %></td> -->
           <td ><%= dataEntry.status ? 'good' : dataEntry.statusCode %></td>

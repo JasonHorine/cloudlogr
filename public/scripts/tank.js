@@ -117,6 +117,7 @@ function redrawTable(data){
     //console.log(dataEntry.value);
     $( "tbody tr:nth-child(" + (1+index) +")" ).html(
       "<td>" + dataEntry.value.toFixed(1) + "</td>" +
+      "<td>" + ((index === 0) ? "0" : "t-" + index) + "</td>" +
       "<td id='td_date'>" + moment(dataEntry.timestamp).format("dd, MMM DD hh:mm:ss A") + "</td>" +
       "<td>" + (dataEntry.status ? 'good' : dataEntry.statusCode) + "</td>" +
       "<td>" + (dataEntry.eWONMessage || '') + "</td>"
