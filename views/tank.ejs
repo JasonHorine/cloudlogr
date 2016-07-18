@@ -9,10 +9,16 @@
   <meta name="author" content="SitePoint">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+ <!-- bootstrap CSS CDN -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
   <link rel="stylesheet" href="styles/styles.css">
-  <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+  <!-- <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'> -->
 
   <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+
+
 
   <!-- Chart.JS -->
   <script src="../scripts/Chart.bundle.js"></script>
@@ -39,33 +45,33 @@
   <!-- <button class="button_poll" type="">Poll: <%= schedule.dataPollRate %>ms</button> -->
   <table class="tank_table">
     <caption><h3><%= schedule.dataTagname %></h3>
-    <div class="control_group">
-      <span>Poll Rate: </span>
-      <span id="data_poll_rate"><%= schedule.dataPollRate/1000 %></span>
-      <span> seconds</span>
-      <form class="inline poll_rate_change" action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
-        <input class="short" type="text" name="newDataPollRate" value="3 - 60" onFocus="clearText(this)">
-        <input class="button_link" type="submit" value="Change">
-      </form>
-    </div>
-    <div class="control_group">
-      <span>Polling: </span>
-      <span id="data_polling_state"><%= schedule.dataPollingStateReq ? 'Active' : 'Inactive' %></span>
+      <div class="control_group">
+        <span>Poll Rate: </span>
+        <span id="data_poll_rate"><%= schedule.dataPollRate/1000 %></span>
+        <span> seconds</span>
+        <form class="inline poll_rate_change" action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
+          <input class="short" type="text" name="newDataPollRate" value="3 - 60" onFocus="clearText(this)">
+          <input class="button_link" type="submit" value="Change">
+        </form>
+      </div>
+      <div class="control_group">
+        <span>Polling: </span>
+        <span id="data_polling_state"><%= schedule.dataPollingStateReq ? 'Active' : 'Inactive' %></span>
 
-    </div>
-    <div class="control_group">
-      <button class="inline button_link go" id="start_polling_button" style="display: none;" type="button" onclick="pollDBData()">Start Polling</button>
+      </div>
+      <div class="control_group">
+        <button class="inline button_link go" id="start_polling_button" style="display: none;" type="button" onclick="pollDBData()">Start Polling</button>
 
-      <button class="inline button_link stop" id="stop_polling_button" style="display: none;" type="button" onclick="stopPolling()">Stop Polling</button>
+        <button class="inline button_link stop" id="stop_polling_button" style="display: none;" type="button" onclick="stopPolling()">Stop Polling</button>
 
-      <!-- <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
-        <input type="hidden">
-        <input class="button_link stop" id="stop_polling_button" style="display: none;" type="submit" value="Stop Polling">
-      </form> -->
+        <!-- <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
+          <input type="hidden">
+          <input class="button_link stop" id="stop_polling_button" style="display: none;" type="submit" value="Stop Polling">
+        </form> -->
 
 
-      <button class="inline button_link" id="get_one_reading_button" style="display: none;" type="button" onclick="getOneReading()">Get One Reading</button>
-    </div>
+        <button class="inline button_link" id="get_one_reading_button" style="display: none;" type="button" onclick="getOneReading()">Get One Reading</button>
+      </div>
     </caption>
     <thead>
       <tr>
@@ -93,23 +99,28 @@
 
   <!-- Chart.JS -->
   <div class="center">
-        <canvas id="canvas"></canvas>
+    <canvas id="canvas"></canvas>
   </div>
   <!-- Chart.JS -->
 
-  <!-- for socket io, not currently in use -->
-
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
-
+  <!-- Socket.io -->
+  <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-
   <script>
     var socket = io();
     socket.on('connect', function() {
     console.log('Connected on front end.');
 });
-  </script>
+  </script> -->
+  <!-- Socket.io -->
+
+  <!-- bootstrap.js CDN -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+  <!-- moment.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js" type="text/javascript" charset="utf-8" async defer></script>
+
+  <!-- tank.js -->
   <script src="/scripts/tank.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>
 </html>

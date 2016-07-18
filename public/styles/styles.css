@@ -7,7 +7,7 @@ html {
 body {
   max-width: 600px;
   margin: 0px auto;
-  font-family: 'Oxygen', Arial, sans-serif;
+  /*font-family: 'Oxygen', Arial, sans-serif;*/
   padding: 20px;
   text-align: center;
 }
