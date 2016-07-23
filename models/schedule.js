@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');  // must do this before using it makes mongoose available here
 var request = require('request');
-var parse = require('csv-parse');
-var babyparse = require('babyparse');
+// var parse = require('csv-parse');  // was used with eWON
+// var babyparse = require('babyparse');  // was used with eWON
 
 var ScheduleSchema = new mongoose.Schema({  // create a schema
   user: { type: String, required: true },
@@ -120,78 +120,78 @@ ScheduleSchema.methods.readMockOnce = function readMockOnce(callback){ // callba
 
 // used for eWON access, no longer functional
 // call to generate one eWON data point, save to DB and execute callback (response)
-ScheduleSchema.methods.readEwonOnce = function readEwonOnce(callback){ // callback is executed at end
-  console.log('starting readEwonOnce, logging in');
-  request('https://m2web.talk2m.com/t2mapi/login?' + // login to get t2msession
-    't2maccount=' + process.env.EWON_ACCOUNT +
-    '&t2musername=' + process.env.EWON_USER_ID +
-    '&t2mpassword=' + process.env.EWON_USER_PASSWORD +
-    '&t2mdeveloperid=' + process.env.EWON_DEV_ID, function (error, response, body) { // execute this when a session ID is returned
-      if (!error && response.statusCode == 200) {  // if no error
-        var bodyJson = JSON.parse(body);
-        var eWONSessionID = bodyJson.t2msession; // save the session ID
-        console.log('requesting data');
-        request('https://m2web.talk2m.com/t2mapi/get/sample/rcgi.bin/ParamForm?' + // get tags
-          'AST_Param=$dtIV$ftT' +
-          '&t2maccount=' + process.env.EWON_ACCOUNT +
-          '&t2musername=' + process.env.EWON_USER_ID +
-          '&t2mpassword=' + process.env.EWON_USER_PASSWORD +
-          '&t2mdeveloperid=' + process.env.EWON_DEV_ID +
-          '&t2mdeviceusername=' + process.env.EWON_DEVICE_USERNAME +
-          '&t2mdevicepassword=' + process.env.EWON_DEVICE_PASSWORD +
-          '&t2msession=' + eWONSessionID, function (error, response, body) {
-            if (!error && response.statusCode == 200) { // if no error... should record error instead if it exists
-              parse(body, {delimiter: ';'}, function(err, output){
-                var value = output[3][2];
-                // console.log('get tags response parse: ' + output);
-                // console.log('tags response value: ' + value);
-                var clock = new Date();
-                var data = {
-                  value: value,
-                  timestamp: clock,
-                  status: true,
-                  statusCode: 200,
-                  eWONMessage: null
-                };
-                Schedule.findOneAndUpdate( { user: 'Jason' }, { $push: { data: data }}, { new: true }, function(err, schedule){ // after write, database returns schedule
-                  if (err){
-                    console.log('could not find user: Jason.  Error: ' + err);
-                  } else {
-                    console.log('data saved');
-                    if (callback){ //if a callback was provided, use it
-                      callback.redirect('/tank'); // response.redirect
-                    } else { // if no callback provided, return schedule
-                      return schedule;
-                    }
-                  };
-                });
-                request('https://m2web.talk2m.com/t2mapi/logout?' + // log out routine
-                  'name=sample' + // hard-coded variabsle, should come from database
-                  '&t2mdeveloperid=' + process.env.EWON_DEV_ID +
-                  '&t2msession=' + eWONSessionID, function (error, response, body) {
-                    if (error){
-                      console.log('logout error: ' + error);
-                      console.log('logout error: response: ' + response);
-                      console.log('logout error: body: ' + body);
-                    } else {
-                      console.log('logout success');
-                    };
-                  });
+// ScheduleSchema.methods.readEwonOnce = function readEwonOnce(callback){ // callback is executed at end
+//   console.log('starting readEwonOnce, logging in');
+//   request('https://m2web.talk2m.com/t2mapi/login?' + // login to get t2msession
+//     't2maccount=' + process.env.EWON_ACCOUNT +
+//     '&t2musername=' + process.env.EWON_USER_ID +
+//     '&t2mpassword=' + process.env.EWON_USER_PASSWORD +
+//     '&t2mdeveloperid=' + process.env.EWON_DEV_ID, function (error, response, body) { // execute this when a session ID is returned
+//       if (!error && response.statusCode == 200) {  // if no error
+//         var bodyJson = JSON.parse(body);
+//         var eWONSessionID = bodyJson.t2msession; // save the session ID
+//         console.log('requesting data');
+//         request('https://m2web.talk2m.com/t2mapi/get/sample/rcgi.bin/ParamForm?' + // get tags
+//           'AST_Param=$dtIV$ftT' +
+//           '&t2maccount=' + process.env.EWON_ACCOUNT +
+//           '&t2musername=' + process.env.EWON_USER_ID +
+//           '&t2mpassword=' + process.env.EWON_USER_PASSWORD +
+//           '&t2mdeveloperid=' + process.env.EWON_DEV_ID +
+//           '&t2mdeviceusername=' + process.env.EWON_DEVICE_USERNAME +
+//           '&t2mdevicepassword=' + process.env.EWON_DEVICE_PASSWORD +
+//           '&t2msession=' + eWONSessionID, function (error, response, body) {
+//             if (!error && response.statusCode == 200) { // if no error... should record error instead if it exists
+//               parse(body, {delimiter: ';'}, function(err, output){
+//                 var value = output[3][2];
+//                 // console.log('get tags response parse: ' + output);
+//                 // console.log('tags response value: ' + value);
+//                 var clock = new Date();
+//                 var data = {
+//                   value: value,
+//                   timestamp: clock,
+//                   status: true,
+//                   statusCode: 200,
+//                   eWONMessage: null
+//                 };
+//                 Schedule.findOneAndUpdate( { user: 'Jason' }, { $push: { data: data }}, { new: true }, function(err, schedule){ // after write, database returns schedule
+//                   if (err){
+//                     console.log('could not find user: Jason.  Error: ' + err);
+//                   } else {
+//                     console.log('data saved');
+//                     if (callback){ //if a callback was provided, use it
+//                       callback.redirect('/tank'); // response.redirect
+//                     } else { // if no callback provided, return schedule
+//                       return schedule;
+//                     }
+//                   };
+//                 });
+//                 request('https://m2web.talk2m.com/t2mapi/logout?' + // log out routine
+//                   'name=sample' + // hard-coded variabsle, should come from database
+//                   '&t2mdeveloperid=' + process.env.EWON_DEV_ID +
+//                   '&t2msession=' + eWONSessionID, function (error, response, body) {
+//                     if (error){
+//                       console.log('logout error: ' + error);
+//                       console.log('logout error: response: ' + response);
+//                       console.log('logout error: body: ' + body);
+//                     } else {
+//                       console.log('logout success');
+//                     };
+//                   });
 
-              });
-            }else{
-              console.log('get tags error: ' + error);
-              console.log('get tags error: response: ' + response);
-              console.log('get tags error: body: ' + body);
-            }
-        });
-      }else{
-        console.log('login error: ' + error);
-        console.log('login error: response: ' + response);
-        console.log('login error: body: ' + body);
-      }
-    });
-};
+//               });
+//             }else{
+//               console.log('get tags error: ' + error);
+//               console.log('get tags error: response: ' + response);
+//               console.log('get tags error: body: ' + body);
+//             }
+//         });
+//       }else{
+//         console.log('login error: ' + error);
+//         console.log('login error: response: ' + response);
+//         console.log('login error: body: ' + body);
+//       }
+//     });
+// };
 
 
 //https://docs.mongodb.org/manual/reference/operator/update/push/

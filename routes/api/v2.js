@@ -5,9 +5,6 @@ var router = express.Router();
 module.exports = router;
 var Schedule = require('../../models/schedule');
 var request = require('request');
-var parse = require('csv-parse');
-var babyparse = require('babyparse');
-
 
 //----------------------------------------------//
 //    API route to create a new Schedule        //

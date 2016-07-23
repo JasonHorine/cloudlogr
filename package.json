@@ -17,11 +17,9 @@
   "author": "Jason Horine",
   "license": "ISC",
   "dependencies": {
-    "babyparse": "^0.4.6",
     "body-parser": "^1.15.0",
     "bootstrap": "^3.3.6",
     "chart.js": "^2.1.6",
-    "csv-parse": "^1.1.0",
     "ejs": "^2.4.1",
     "express": "^4.13.4",
     "moment": "^2.13.0",
