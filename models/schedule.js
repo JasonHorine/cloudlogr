@@ -12,16 +12,17 @@ var ScheduleSchema = new mongoose.Schema({  // create a schema
   dataTagname: String,
   dataPollRate: {
    type: Number,
-   min: 3000, // 3 seconds
+   min: 1500, // 1.5 seconds
    max: 60000, // 60 seconds, actual max possible is 2147483647, ~28 days
    required: true },
   dataPollingState: Boolean, // process sets or resets this when polling changes
   dataPollingStateReq: Boolean, // user sets this to request a change to the state
+  timerID: Object,
   data: [{   // each read is saved as one element in this array
     value: Number,  // the value retrieved, if any
     inlet: Boolean,
     outlet: Boolean,
-    timestamp: Date,  // MongoDB cannot stamp the time at this level, provide it in route
+    timestamp: Date,  // MongoDB cannot stamp the time within an object, provide in route
     status: Boolean, // eWON returns true or false
     statusCode: Number, // eWON will return code only if not good
     eWONMessage: String // eWON will return text only if not good
@@ -37,7 +38,8 @@ ScheduleSchema.methods.startPolling = function startPolling(){
   //calling set interval returns a timerID, store it, used by clearInterval
   this.timerID = setInterval(function(){ self.pollEwon(); }, this.dataPollRate);
   // this.writeConfig(); // save the state to the DB (need to be callback?)
-  console.log("startPolling: started polling")
+  console.log(".startPolling: started polling")
+  //console.log(this.timerID);
 };
 
 
@@ -46,22 +48,21 @@ ScheduleSchema.methods.startPolling = function startPolling(){
 // -set dataPollingState to false
 // -clearInterval to stop the polling
 ScheduleSchema.methods.pollEwon = function pollEwon(){
-  console.log("pollEwon: running")
+  console.log(".pollEwon: running")
   var self = this;
-  Schedule.findOne( { user: self.user, dataAddress: self.dataAddress }, 'dataPollingStateReq', function(err, schedule){
-      if (err) console.log('pollEwon: could not find user: Jason.  Error: ' + err);
+  Schedule.findOne( { user: self.user, dataAddress: self.dataAddress }, 'dataPollingStateReq timerID', function(err, schedule){
+
+      if (err) console.log('.pollEwon: could not find user: Jason.  Error: ' + err);
       else{
-        // response.send('the schedule is: ' + schedule); works
-        // response.render('tank', [ {schedule: "I'm schedule"}, {header: "I'm header"} ]);
         if (schedule.dataPollingStateReq === true){
-          console.log("pollEwon: calling readEwonOnce")
+          console.log(".pollEwon: calling readEwonOnce")
           // self.readEwonOnce();
           self.readMockOnce();
         }
         else {
           clearInterval(self.timerID); // shut down the polling
           Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: false }, { new: false }, function(err, schedule){ // set the flag in the database that polling has stopped
-            console.log("pollEwon: server polling stopped");
+            console.log(".pollEwon: server polling stopped");
           });
         }
       };
@@ -72,6 +73,7 @@ ScheduleSchema.methods.pollEwon = function pollEwon(){
 // call to generate one simulated data point, save to DB and execute callback (response)
 ScheduleSchema.methods.readMockOnce = function readMockOnce(callback){ // callback is executed at end
   console.log('starting readMockOnce');
+  var self = this;  // used for saving timerID
   Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get the previous reading
     if (err){
       console.log('error reading DB: ' + err);
@@ -79,9 +81,6 @@ ScheduleSchema.methods.readMockOnce = function readMockOnce(callback){ // callba
     } else { // calculate the new value to store and return
       var clock = new Date();
       var lastEntry = schedule.data.slice(-1)[0];
-      //var elapsed = clock - lastEntry.timestamp; // dif between now and last entry in milliseconds
-      //var maxElapsed = 1800000; // 30 minutes in milliseconds
-      //(elapsed > maxElapsed) ? elapsed = maxElapsed : elapsed = elapsed; // clamp elapsed to 30 minutes, tends to peg a rail upon waking otherwise
       var lastValue = lastEntry.value;
       var centerBias = 0
       // create a bias to tend to drive the result toward the center, 50
@@ -101,7 +100,21 @@ ScheduleSchema.methods.readMockOnce = function readMockOnce(callback){ // callba
         statusCode: 200,
         eWONMessage: null
       };
-      Schedule.findOneAndUpdate( { user: 'Jason' }, { $push: { data: data }}, { new: true }, function(err, schedule){ // after write, database returns schedule
+      //console.log(".readMockOnce self.timerID is");
+      //console.log(self.timerID);
+      var timid = self.timerID;
+      Schedule.findOneAndUpdate( { // add the new data to the DB
+        user: 'Jason' // find Jason's data
+      },{
+        $push: {  // push data to DB array
+          data: {
+            $each: [data],
+            $slice: -20 // trim document to 20 data entries
+          }
+        }
+      }, {
+        new: true // return the updated document
+      }, function(err, schedule){ // after write, database returns schedule
           if (err){
             console.log('could not find user: Jason.  Error: ' + err);
           } else {
