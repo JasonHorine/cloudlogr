@@ -42,7 +42,7 @@ router.post('/startPolling', function(request, response) {
   // -change dataPollingState = true
   // -change dataPollingStateReq = true
   // -start polling if findOne returns a database object
-  Schedule.findOneAndUpdate( { user: 'Jason', dataPollingState: false }, { dataPollingState: true, dataPollingStateReq: true }, {new: true}, function(err, schedule){ // after write, database returns schedule
+  Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: true, dataPollingStateReq: true }, {new: true}, function(err, schedule){ // after write, database returns schedule
       // err is returned if error, else updated schedule is
       // console.log(schedule);
       if (schedule){ // if update worked, start polling
