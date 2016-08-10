@@ -5,7 +5,7 @@ html {
   background-repeat: no-repeat;
 }
 body {
-  max-width: 600px;
+  /*max-width: 600px;*/
   margin: 0px auto;
   /*font-family: 'Oxygen', Arial, sans-serif;*/
   padding: 20px;
@@ -19,6 +19,9 @@ table, th, td, div.control_group {
 }
 table, th, td {
   padding: 4px;
+}
+table {
+  width: 100%;
 }
 div.control_group {
   padding: 15px;
@@ -75,7 +78,7 @@ input.short{
 }
 .center {
   display: block;
-  margin: 10px auto;
+  /*margin: 10px auto;*/
 }
 .button_link{
   display: inline-block;

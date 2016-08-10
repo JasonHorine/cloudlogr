@@ -32,7 +32,7 @@
   <!--  Chart.JS  -->
 
 
-  <link rel="icon" href="./images/cl_icon.png"/>
+  <link rel="icon" href="./images/cl_icon.ico"/>
   <title>CloudLogr</title>
 </head>
 <body class="center">
@@ -42,67 +42,77 @@
     </a>
   </header><!-- /header -->
   <h1 class="center_text">CloudLogr</h1>
-  <!-- <button class="button_poll" type="">Poll: <%= schedule.dataPollRate %>ms</button> -->
-  <table class="tank_table">
-    <caption><h3><%= schedule.dataTagname %></h3>
-      <div class="control_group">
-        <span>Poll Rate: </span>
-        <span id="data_poll_rate"><%= schedule.dataPollRate/1000 %></span>
-        <span> seconds</span>
-        <form class="inline poll_rate_change" action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
-          <input class="short" type="text" name="newDataPollRate" value="3 - 60" onFocus="clearText(this)">
-          <input class="button_link" type="submit" value="Change">
-        </form>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12"> <!-- table controls -->
+
+        <caption><h3><%= schedule.dataTagname %></h3>
+          <div class="control_group">
+            <span>Poll Rate: </span>
+            <span id="data_poll_rate"><%= schedule.dataPollRate/1000 %></span>
+            <span> seconds</span>
+            <form class="inline poll_rate_change" action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
+              <input class="short" type="text" name="newDataPollRate" value="3 - 60" onFocus="clearText(this)">
+              <input class="button_link" type="submit" value="Change">
+            </form>
+          </div>
+          <div class="control_group">
+            <span>Polling: </span>
+            <span id="data_polling_state"><%= schedule.dataPollingStateReq ? 'Active' : 'Inactive' %></span>
+
+          </div>
+          <div class="control_group">
+            <button class="inline button_link go" id="start_polling_button" style="display: none;" type="button" onclick="pollDBData()">Start Polling</button>
+
+            <button class="inline button_link stop" id="stop_polling_button" style="display: none;" type="button" onclick="stopPolling()">Stop Polling</button>
+
+            <!-- <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
+              <input type="hidden">
+              <input class="button_link stop" id="stop_polling_button" style="display: none;" type="submit" value="Stop Polling">
+            </form> -->
+
+
+            <button class="inline button_link" id="get_one_reading_button" style="display: none;" type="button" onclick="getOneReading()">Get One Reading</button>
+          </div>
+        </caption>
+      </div> <!-- /table controls -->
+    </div> <!-- /row -->
+    <div class="row">
+      <div class="col-lg-5 col-md-6">
+        <table class="tank_table">
+          <thead>
+            <tr>
+              <th colspan="" rowspan="" headers="" scope="">Value</th>
+              <th colspan="" rowspan="" headers="" scope="">Time</th>
+              <th colspan="" rowspan="" headers="" scope="">Timestamp</th>
+              <th colspan="" rowspan="" headers="" scope="">Read Status</th>
+              <th colspan="" rowspan="" headers="" scope="">Error Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% schedule.data = schedule.data.reverse(); %><!--want newest first for rendering table-->
+            <% schedule.data.slice(0,10).forEach(function(dataEntry, index){ %> <!-- build the table from 10 most recent entries data -->
+              <tr>
+                <td ><%= dataEntry.value.toFixed(1) %></td>  <!-- float to one decimal place string -->
+                <td ><%= (index === 0) ? "0" : "t-" + index; %></td>
+                <td id="td_date"><%= moment(dataEntry.timestamp).format("dd, MMM DD hh:mm:ss A") %></td>
+                <!-- <td id="td_date"><%= dataEntry.timestamp %></td> -->
+                <td ><%= dataEntry.status ? 'good' : dataEntry.statusCode %></td>
+                <td ><%= dataEntry.eWONMessage %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
       </div>
-      <div class="control_group">
-        <span>Polling: </span>
-        <span id="data_polling_state"><%= schedule.dataPollingStateReq ? 'Active' : 'Inactive' %></span>
-
+      <div class="col-lg-7 col-md-6">
+        <!-- Chart.JS -->
+        <div class="center">
+          <canvas id="canvas"></canvas>
+        </div>
+        <!-- Chart.JS -->
       </div>
-      <div class="control_group">
-        <button class="inline button_link go" id="start_polling_button" style="display: none;" type="button" onclick="pollDBData()">Start Polling</button>
-
-        <button class="inline button_link stop" id="stop_polling_button" style="display: none;" type="button" onclick="stopPolling()">Stop Polling</button>
-
-        <!-- <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
-          <input type="hidden">
-          <input class="button_link stop" id="stop_polling_button" style="display: none;" type="submit" value="Stop Polling">
-        </form> -->
-
-
-        <button class="inline button_link" id="get_one_reading_button" style="display: none;" type="button" onclick="getOneReading()">Get One Reading</button>
-      </div>
-    </caption>
-    <thead>
-      <tr>
-        <th colspan="" rowspan="" headers="" scope="">Value</th>
-        <th colspan="" rowspan="" headers="" scope="">Time</th>
-        <th colspan="" rowspan="" headers="" scope="">Timestamp</th>
-        <th colspan="" rowspan="" headers="" scope="">Read Status</th>
-        <th colspan="" rowspan="" headers="" scope="">Error Message</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% schedule.data = schedule.data.reverse(); %><!--want newest first for rendering table-->
-      <% schedule.data.slice(0,10).forEach(function(dataEntry, index){ %> <!-- build the table from 10 most recent entries data -->
-        <tr>
-          <td ><%= dataEntry.value.toFixed(1) %></td>  <!-- float to one decimal place string -->
-          <td ><%= (index === 0) ? "0" : "t-" + index; %></td>
-          <td id="td_date"><%= moment(dataEntry.timestamp).format("dd, MMM DD hh:mm:ss A") %></td>
-          <!-- <td id="td_date"><%= dataEntry.timestamp %></td> -->
-          <td ><%= dataEntry.status ? 'good' : dataEntry.statusCode %></td>
-          <td ><%= dataEntry.eWONMessage %></td>
-        </tr>
-      <% }); %>
-    </tbody>
-  </table>
-
-  <!-- Chart.JS -->
-  <div class="center">
-    <canvas id="canvas"></canvas>
-  </div>
-  <!-- Chart.JS -->
-
+    </div>  <!-- /row -->
+  </div> <!-- /container -->
   <!-- Socket.io -->
   <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
   <script src="/socket.io/socket.io.js"></script>
