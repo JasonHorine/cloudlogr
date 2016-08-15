@@ -27,6 +27,7 @@ div.control_group {
 canvas#canvas {
   border: 2px solid black;
   background: #efefef;
+  width: 100% !important;
 }
 
 td#td_date {
