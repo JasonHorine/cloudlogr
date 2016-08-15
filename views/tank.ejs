@@ -37,7 +37,7 @@
 </head>
 <body class="center">
   <header>
-    <a class="button_link relative" href="/about">About</a>
+    <a class="btn btn-info relative" href="/about">About</a>
   </header><!-- /header -->
   <h1 class="center_text">CloudLogr</h1>
   <div class="container">
@@ -45,25 +45,24 @@
       <div class="col-lg-12"> <!-- table controls -->
 
         <caption>
-          <h3 id="dataTagname"><%= schedule.dataTagname %></h3>
+          <h2 id="dataTagname"><%= schedule.dataTagname %></h2>
           <div class="control_group">
-            <span>Poll Rate: </span>
+            <h3><span>Poll Rate: </span>
             <span id="data_poll_rate"><%= schedule.dataPollRate/1000 %></span>
             <span> seconds</span>
             <form class="inline poll_rate_change" action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
               <input class="short" type="text" name="newDataPollRate" value="3 - 60" onFocus="clearText(this)">
-              <input class="button_link" type="submit" value="Change">
-            </form>
+              <input class="btn btn-default" type="submit" value="Change">
+            </form></h3>
           </div>
           <div class="control_group">
-            <span>Polling: </span>
-            <span id="data_polling_state"><%= schedule.dataPollingStateReq ? 'Active' : 'Inactive' %></span>
-
+            <h3><span>Polling: </span>
+            <span id="data_polling_state"><%= schedule.dataPollingStateReq ? 'Active' : 'Inactive' %></span></h3>
           </div>
           <div class="control_group">
-            <button class="inline button_link go" id="start_polling_button" style="display: none;" type="button" onclick="pollDBData()">Start Polling</button>
+            <button class="inline btn btn-success go" id="start_polling_button" style="display: none;" type="button" onclick="pollDBData()">Start Polling</button>
 
-            <button class="inline button_link stop" id="stop_polling_button" style="display: none;" type="button" onclick="stopPolling()">Stop Polling</button>
+            <button class="inline btn btn-danger stop" id="stop_polling_button" style="display: none;" type="button" onclick="stopPolling()">Stop Polling</button>
 
             <!-- <form class="inline" action="/api/v2/stopPolling" method="post" accept-charset="utf-8">
               <input type="hidden">
@@ -71,7 +70,7 @@
             </form> -->
 
 
-            <button class="inline button_link" id="get_one_reading_button" style="display: none;" type="button" onclick="getOneReading()">Get One Reading</button>
+            <button class="inline btn btn-default" id="get_one_reading_button" style="display: none;" type="button" onclick="getOneReading()">Get One Reading</button>
           </div>
         </caption>
       </div> <!-- /table controls -->

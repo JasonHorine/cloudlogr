@@ -5,9 +5,6 @@ body {
   padding: 20px;
   /*text-align: center;*/
 }
-header {
-  float: left;
-}
 table, th, td, div.control_group {
   border: 2px solid black;
   text-align: center;
@@ -33,36 +30,13 @@ canvas#canvas {
 td#td_date {
   width: 330px
 }
-h1 {
-  font-size: 2.4em;
-  line-height: 120%;
-  margin-bottom: 10px;
-}
-h2 {
-  font-size: 1.8em;
-  line-height: 120%;
-  margin-top: 20px;
-}
-h3 {
-  font-size: 1.41em;
-  line-height: 120%;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-p, ul, button, span, a, input{
-  font-size: 1em;
-  letter-spacing: 1px;
-}
-a {
-  color: inherit;
-  text-decoration: inherit;
-}
 .inline{
   display: inline-block;
 }
 input.short{
   width: 5em;
   text-align: center;
+  padding: 3px;
 }
 
 .absolute{
@@ -96,12 +70,4 @@ input.short{
 }
 .invisible{
   display: none;
-}
-.stop{
-  background-color: red;
-  color: white;
-}
-.go{
-  background-color: green;
-  color: white;
 }

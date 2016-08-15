@@ -20,7 +20,7 @@ var pollDBData = function(){ // Start Polling button pressed
       if (data === "no schedule"){
         // do nothing, would be better to show error message to user
       } else {  //polling has started
-        $("#data_polling_state").html("Active").removeClass("stop").addClass("go");
+        $("#data_polling_state").html("Active").removeClass("label label-default").addClass("label label-success");
         $(".poll_rate_change").hide();
         $("#start_polling_button").hide();
         $("#stop_polling_button").show();
@@ -67,7 +67,7 @@ var stopPolling = function(){
       if (data === false){
         // do nothing, would be better to show error message to user
       } else {  //polling has stopped
-        $("#data_polling_state").html("Inactive").removeClass("go").addClass("stop");
+        $("#data_polling_state").html("Inactive").removeClass("label label-success").addClass("label label-default");
         $(".poll_rate_change").show();
         $("#start_polling_button").show();
         $("#stop_polling_button").hide();
@@ -164,13 +164,13 @@ $(function(){ // after DOM loads,
     var pollRate = Number($("#data_poll_rate").html()) * 1000; // get the poll rate in seconds from DOM, convert to ms and store
     // console.log("poll rate: " + pollRate);
     timerID = setInterval(getData, pollRate); // start polling the server
-    $("#data_polling_state").removeClass("stop").addClass("go");
+    $("#data_polling_state").removeClass("label label-default").addClass("label label-success");
     $(".poll_rate_change").hide();
     $("#start_polling_button").hide();
     $("#stop_polling_button").show();
     $("#get_one_reading_button").hide();
   } else {
-    $("#data_polling_state").removeClass("go").addClass("stop");
+    $("#data_polling_state").removeClass("label label-success").addClass("label label-default");
     $(".poll_rate_change").show();
     $("#start_polling_button").show();
     $("#stop_polling_button").hide();
