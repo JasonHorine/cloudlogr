@@ -12,7 +12,7 @@ var ScheduleSchema = new mongoose.Schema({  // create a schema
   dataTagname: String,
   dataPollRate: {
    type: Number,
-   min: 1500, // 1.5 seconds
+   min: 3000, // 3 seconds
    max: 60000, // 60 seconds, actual max possible is 2147483647, ~28 days
    required: true },
   dataPollingState: Boolean, // process sets or resets this when polling changes
