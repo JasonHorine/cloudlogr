@@ -29,7 +29,7 @@ router.post('/newSchedule', function(request, response) {
     if (err) res.send(err);
     else {
       response.send('Schedule saved!' + schedule + ' newSchedule = ' + newSchedule);
-      console.log("new schedule saved to DB");
+      //console.log("new schedule saved to DB");
     };
   });
 });
@@ -48,10 +48,10 @@ router.post('/startPolling', function(request, response) {
       if (schedule){ // if update worked, start polling
         schedule.readMockOnce(response); // read immediately and send reading as the response
         schedule.startPolling(); // start polling, first will be in dataPollRate ms
-        console.log('Hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
+        //console.log('Hit startPolling. dataPollingState is now: ' + schedule.dataPollingState);
         //response.send({dataPollingStateReq: schedule.dataPollingStateReq, dataPollingState: schedule.dataPollingState, dataPollRate: schedule.dataPollRate}); // send polling stats;
       } else {
-        console.log('Hit startPolling.  Err: ' + err);
+        //console.log('Hit startPolling.  Err: ' + err);
         response.send('no schedule');
       }
     });
@@ -89,9 +89,9 @@ router.post('/changePollRate', function(request, response) {
       // err is returned if error, else updated schedule is
       response.redirect('/tank');
       if (schedule){ // if the write succeeded
-        console.log('hit changePollRate. dataPollRate is now: ' + schedule.dataPollRate + 'ms');
+        //console.log('hit changePollRate. dataPollRate is now: ' + schedule.dataPollRate + 'ms');
       } else {
-        console.log('hit changePollRate. did not update');
+        //console.log('hit changePollRate. did not update');
       };
   });
 });
@@ -146,4 +146,3 @@ router.post('/resetFlags', function(request, response) {
 //----------------------------------------------//
 //    API route to change the process inputs    //  open or close valves
 //----------------------------------------------//
-

@@ -16,7 +16,7 @@ var pollDBData = function(){ // Start Polling button pressed
       method: 'POST'
     })
     .done(function(data){ // if the server repsonds without error
-      console.log("pollDBData.done got: " + data);
+      //console.log("pollDBData.done got: " + data);
       if (data === "no schedule"){
         // do nothing, would be better to show error message to user
       } else {  //polling has started
@@ -34,7 +34,7 @@ var pollDBData = function(){ // Start Polling button pressed
       }
     })
     .always(function(data){
-      console.log("pollDBData got: " + data);
+      //console.log("pollDBData got: " + data);
     })
   } //else { // polling is aleady active
   //  clearInterval(timerID);
@@ -42,15 +42,15 @@ var pollDBData = function(){ // Start Polling button pressed
 }
 
 var getOneReading = function(){
-  $.ajax({ // method to tell server to start polling
+  $.ajax({ // get one reading from the API
     url: '/api/v2/oneReading',
     method: 'GET'
   })
   .done(function(data){ // data is the server's response
-    console.log("getOneReading.done got: " + data);
-    if (data === "no schedule"){
+    //console.log("getOneReading.done got: " + data);
+    if (data === "no schedule"){ // no data returned
         // do nothing, would be better to show error message to user
-    } else {  //polling has started
+    } else {  //one data sample was returned
       redrawTable(data); // if object returned is data, pass it to redrawTable function
     }
   })
@@ -63,7 +63,7 @@ var stopPolling = function(){
       method: 'POST'
     })
     .done(function(data){ // if the server repsonds without error
-      console.log("pollDBData.done got: " + data);
+      //console.log("pollDBData.done got: " + data);
       if (data === false){
         // do nothing, would be better to show error message to user
       } else {  //polling has stopped
@@ -75,7 +75,7 @@ var stopPolling = function(){
       }
     })
     .always(function(data){
-      console.log("pollDBData got: " + data);
+      //console.log("pollDBData got: " + data);
       clearInterval(timerID); // stop the browser polling
     })
   } //else { // polling is aleady active
