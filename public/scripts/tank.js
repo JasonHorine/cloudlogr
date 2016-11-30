@@ -10,7 +10,8 @@ function clearText(thefield){
 
 var timerID = null
 var pollDBData = function(){ // Start Polling button pressed
-  if ($("#data_polling_state").html() === 'Inactive'){ //if DOM shows inactive state
+  //if ($("#data_polling_state").html() === 'Inactive'){ //if DOM shows inactive state
+  if ((document.getElementById('data_polling_state').innerHTML) === 'Inactive'){
     $.ajax({ // API route to tell server to start polling
       url: '/api/v2/startPolling',
       method: 'POST'
