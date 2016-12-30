@@ -28,7 +28,8 @@ describe('API V2 tests:', function(){
   describe('Get readings from DB (.get /api/v2/data)', function(){
     it('Returns database in body, without errors.', function(done){
       request('http://localhost:3000/api/v2/data', function(error, response, body) {
-        assert(body && !error, 'Missing body or recieved an error response.');
+        assert(body, 'Missing body.');
+        assert(!error, 'Recieved an error response.');
         newestReading = JSON.parse(body).data[0].timestamp; // newest reading from DB, need in next test
         done();
       })
@@ -38,9 +39,9 @@ describe('API V2 tests:', function(){
     it('Returns database in body with one fresh entry, without errors.', function(done){
       request('http://localhost:3000/api/v2/oneReading', function(error, response, body) {
         var thisReading = JSON.parse(body).data[0].timestamp;
-        assert((body), 'Missing body.');
-        assert((!error), 'Recieved an error response.');
-        assert((thisReading > newestReading), 'Reading is not newer than last.');
+        assert(body, 'Missing body.');
+        assert(!error, 'Recieved an error response.');
+        assert(thisReading > newestReading, 'Reading is not newer than last.');
         done();
       })
     });
