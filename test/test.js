@@ -15,16 +15,26 @@ describe('Array', function() {
 
 var newestReading = {}; //use to compare youngest timestamped database entries between reads
 describe('API V2 tests:', function(){
-  describe('Start polling', function(){
-    it('Returns an object with dataPollingState: true.', function(done){
+  describe('Start polling (.post /api/v2/startPolling)', function(){
+    it('Returns an object with dataPollingState: true, and DataPollingStateReq: true.', function(done){
       request.post('http://localhost:3000/api/v2/startPolling', function(error, response, body){
-        assert(JSON.parse(body).dataPollingState, 'Response did not have dataPollingState == true.');
+        assert(body, 'Missing body.');
+        assert(!error, 'Recieved an error response.');
+        assert(JSON.parse(body).dataPollingState, 'Body did not have dataPollingState == true.');
+        assert(JSON.parse(body).dataPollingStateReq, 'Body did not have dataPollingStateReq == true.');
         done();
       })
     });
   }),
-  describe('Stop polling', function(){
-    it('Returns an object with polling: false.');
+  describe('Stop polling (.post /api/v2/stopPolling)', function(){
+    it('Returns an object with dataPollingStateReq: false.', function(done){
+      request.post('http://localhost:3000/api/v2/stopPolling', function(error, response, body){
+        assert(body, 'Missing body.');
+        assert(!error, 'Recieved an error response.');
+        assert(!JSON.parse(body).dataPollingStateReq, 'Body did not have dataPollingStateReq == false.');
+        done();
+      })
+    });
   }),
   describe('Change poll rate.', function(){
     it('Returns an object with pollRate at new rate.');
