@@ -13,10 +13,15 @@ describe('Array', function() {
 });
 */
 
-var newestReading = {}; //
+var newestReading = {}; //use to compare youngest timestamped database entries between reads
 describe('API V2 tests:', function(){
   describe('Start polling', function(){
-    it('Returns an object with polling: true.');
+    it('Returns an object with dataPollingState: true.', function(done){
+      request.post('http://localhost:3000/api/v2/startPolling', function(error, response, body){
+        assert(JSON.parse(body).dataPollingState, 'Response did not have dataPollingState == true.');
+        done();
+      })
+    });
   }),
   describe('Stop polling', function(){
     it('Returns an object with polling: false.');
