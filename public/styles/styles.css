@@ -71,3 +71,7 @@ input.short{
 .invisible{
   display: none;
 }
+.fade{
+  opacity: 1;
+  transition: background-color 0.3s;
+}

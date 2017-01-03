@@ -13,7 +13,8 @@ describe('Array', function() {
 });
 */
 
-var newestReading = {}; //use to compare youngest timestamped database entries between reads
+var newestReading = null; //use to compare youngest timestamped database entries between reads
+var pollRateOrig = null; //use to compare retrieved poll rates between routes
 describe('API V2 tests:', function(){
   describe('Start polling (.post /api/v2/startPolling)', function(){
     it('Returns an object with dataPollingState: true, and DataPollingStateReq: true.', function(done){
@@ -32,13 +33,33 @@ describe('API V2 tests:', function(){
         assert(body, 'Missing body.');
         assert(!error, 'Recieved an error response.');
         assert(!JSON.parse(body).dataPollingStateReq, 'Body did not have dataPollingStateReq == false.');
+        pollRateOrig = JSON.parse(body).dataPollRate; // store for next test
         done();
       })
     });
   }),
-  describe('Change poll rate.', function(){
-    it('Returns an object with pollRate at new rate.');
-    // console.log('dataPollRate from DB: ' + JSON.parse(body).dataPollRate);
+  describe('Change poll rate (.post /api/v2/changePollRate)', function(){
+    it('Returns an object with dataPollRate at new rate.', function(done){
+      // select a new dataPollRate to test that is within range but != the current
+      var pollRateNew = null;
+      if (pollRateOrig > 4000){ //pollRateOrig saved during prior test
+        pollRateNew = 3000;
+      } else {
+        pollRateNew = 5000;
+      };
+      request.post({
+        url: 'http://localhost:3000/api/v2/changePollRate',
+        body: '{newDataPollRate: pollRateNew}'
+      }, function(error, response, body){
+        console.log('error: ' + error);
+        console.log('response: ' + JSON.stringify(response, null, 4));
+        console.log('body: ' + body);
+        assert(body, 'Missing body.');
+        assert(!error, 'Recieved an error response.');
+        assert(JSON.parse(body).dataPollRate == pollRateNew, 'dataPollRate was not set to the new value');
+        done();
+      })
+    });
   }),
   describe('Get readings from DB (.get /api/v2/data)', function(){
     it('Returns database in body, without errors.', function(done){

@@ -48,11 +48,11 @@
           <h2 id="dataTagname"><%= schedule.dataTagname %></h2>
           <div class="control_group">
             <h3><span>Poll Rate: </span>
-            <span id="data_poll_rate"><%= schedule.dataPollRate/1000 %></span>
+            <span id="data_poll_rate" class="fade" ><%= schedule.dataPollRate/1000 %></span>
             <span> seconds</span>
             <form class="inline poll_rate_change" action="/api/v2/changePollRate" method="post" accept-charset="utf-8">
-              <input class="short" type="text" name="newDataPollRate" value="3 - 60" onFocus="clearText(this)">
-              <input class="btn btn-default" type="submit" value="Change">
+              <input class="short fade" id="user_poll_rate_txt" type="text" name="newDataPollRate" value="3 - 60" onFocus="clearText(this)">
+              <input class="btn btn-default" id="poll_rate_button" type="submit" value="Change">
             </form></h3>
           </div>
           <div class="control_group">
@@ -68,7 +68,6 @@
               <input type="hidden">
               <input class="button_link stop" id="stop_polling_button" style="display: none;" type="submit" value="Stop Polling">
             </form> -->
-
 
             <button class="inline btn btn-default" id="get_one_reading_button" style="display: none;" type="button" onclick="getOneReading()">Get One Reading</button>
           </div>

@@ -84,6 +84,44 @@ var stopPolling = function(){
   // }
 }
 
+// poll rate button: prevent default form action and give it onClick= "changePollRate()"
+$("#poll_rate_button").click(function(event){
+  event.preventDefault();
+  changePollRate();
+});
+var pollRateTextDefault = $("#user_poll_rate_txt").val();
+var changePollRate = function(){
+  var setDefaultText = function(){
+    $("#user_poll_rate_txt").val(pollRateTextDefault);
+  }
+  var requestedRate = $("#user_poll_rate_txt");
+  if (isNaN(requestedRate.val()) || requestedRate.val() < 3 || 60 < requestedRate.val()){ //bad inputs
+    $("#user_poll_rate_txt").css("background-color", "hotpink");
+    setTimeout(function(){ // wait then change text back to default
+      $("#user_poll_rate_txt").val(pollRateTextDefault);
+    },800);
+    setTimeout(function(){ // wait then change color back to none
+      $("#user_poll_rate_txt").css("background-color", "");
+    },600);
+  } else { //good input
+    //call API to update
+    $.ajax({
+      url: '/api/v2/changePollRate',
+      method: 'POST',
+      data: {newDataPollRate : requestedRate.val()}
+    })
+    .done(function(data){ // if the server repsonds without error
+      $("#data_poll_rate").text(data.dataPollRate/1000); //value returned from DB via API
+      $("#data_poll_rate").css("background-color", "lightgreen");
+      setTimeout(function(){ // wait then change color back to none
+        $("#data_poll_rate").css("background-color", "");
+      },600);
+      setDefaultText();
+    })
+    //.always(function(data){})
+  }
+}
+
 function getData(){
   //console.log('getData started');
   if ($("#data_polling_state").html() === 'Inactive'){ //if DOM shows inactive, stop

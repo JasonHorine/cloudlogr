@@ -66,11 +66,11 @@ router.post('/stopPolling', function(request, response) { // change dataPollingS
       // err is returned if error, else updated schedule is
       if (schedule){ // if a matching schedule is found in the DB,
         response.send({dataPollingStateReq: schedule.dataPollingStateReq, dataPollingState: schedule.dataPollingState, dataPollRate: schedule.dataPollRate});
-        console.log('hit stopPolling. dataPollingStateReq is now: ' + schedule.dataPollingStateReq);
+        //console.log('hit stopPolling. dataPollingStateReq is now: ' + schedule.dataPollingStateReq);
       }
       else {
         response.send(false);
-        console.log('hit stopPolling. dataPollingStateReq is now: ' + schedule.dataPollingStateReq);
+        //console.log('hit stopPolling. dataPollingStateReq is now: ' + schedule.dataPollingStateReq);
       };
   });
 });
@@ -80,16 +80,14 @@ router.post('/stopPolling', function(request, response) { // change dataPollingS
 //    API route to change poll rate
 //----------------------------------------------//
 // post to /api/vi/changePollRate with newDataPollRate: in body
-// if not already polling, change poll rate and return new poll rate
-// if already polling, return 'stop polling before changing the rate'
-// if a bad poll rate is specified, return 'bad poll rate'
+// error handling (rate & state) is enforced in the browser
 router.post('/changePollRate', function(request, response) {
   //response.send(request.body);
   Schedule.findOneAndUpdate( { user: 'Jason', dataPollingState: false }, { dataPollRate: request.body.newDataPollRate * 1000 }, { new: true, runValidators: true }, function(err, schedule){ // after write, database returns schedule
       // err is returned if error, else updated schedule is
-      response.redirect('/tank');
       if (schedule){ // if the write succeeded
-        //console.log('hit changePollRate. dataPollRate is now: ' + schedule.dataPollRate + 'ms');
+        console.log('hit changePollRate. dataPollRate is now: ' + schedule.dataPollRate + 'ms');
+        response.send({dataPollRate: schedule.dataPollRate});
       } else {
         //console.log('hit changePollRate. did not update');
       };
