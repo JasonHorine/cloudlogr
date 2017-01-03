@@ -96,11 +96,11 @@ var changePollRate = function(){
   }
   var requestedRate = $("#user_poll_rate_txt");
   if (isNaN(requestedRate.val()) || requestedRate.val() < 3 || 60 < requestedRate.val()){ //bad inputs
-    $("#user_poll_rate_txt").css("background-color", "hotpink");
+    $("#user_poll_rate_txt").css("background-color", "red"); // bacground to red
     setTimeout(function(){ // wait then change text back to default
       $("#user_poll_rate_txt").val(pollRateTextDefault);
     },800);
-    setTimeout(function(){ // wait then change color back to none
+    setTimeout(function(){ // wait then change background to none
       $("#user_poll_rate_txt").css("background-color", "");
     },600);
   } else { //good input

@@ -83,13 +83,22 @@ router.post('/stopPolling', function(request, response) { // change dataPollingS
 // error handling (rate & state) is enforced in the browser
 router.post('/changePollRate', function(request, response) {
   //response.send(request.body);
-  Schedule.findOneAndUpdate( { user: 'Jason', dataPollingState: false }, { dataPollRate: request.body.newDataPollRate * 1000 }, { new: true, runValidators: true }, function(err, schedule){ // after write, database returns schedule
-      // err is returned if error, else updated schedule is
-      if (schedule){ // if the write succeeded
-        console.log('hit changePollRate. dataPollRate is now: ' + schedule.dataPollRate + 'ms');
+  //console.log('\nhit /changePollRate');
+  //console.log('request: ' + request);
+  //console.log('request.body: ' + JSON.stringify(request.body, null, 4));
+  //console.log('request.body.newDataPollRate: ' + request.body.newDataPollRate);
+  //console.log('typeOf newDataPollRate: ' + typeof request.body.newDataPollRate);
+  Schedule.findOneAndUpdate( { user: 'Jason', dataPollingState: false },
+    { dataPollRate: request.body.newDataPollRate * 1000 },
+    { new: true, runValidators: true }, function(err, schedule){ // after write, database returns schedule
+      if (schedule){ // if write success
+        //console.log('updated. dataPollRate is now: ' + schedule.dataPollRate + 'ms');
         response.send({dataPollRate: schedule.dataPollRate});
+      } else if (err){ // if an error is returned
+        //console.log('did not update, error: ' + err);
+        response.send({error: err});
       } else {
-        //console.log('hit changePollRate. did not update');
+        //console.log('no error, no schedule returned');
       };
   });
 });

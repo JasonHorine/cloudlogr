@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');  // must do this before using it makes mongoose available here
-var request = require('request');
+// var request = require('request'); // was used with eWon
 // var parse = require('csv-parse');  // was used with eWON
 // var babyparse = require('babyparse');  // was used with eWON
 
@@ -38,7 +38,7 @@ ScheduleSchema.methods.startPolling = function startPolling(){
   //calling set interval returns a timerID, store it, used by clearInterval
   this.timerID = setInterval(function(){ self.pollEwon(); }, this.dataPollRate);
   // this.writeConfig(); // save the state to the DB (need to be callback?)
-  console.log(".startPolling: started polling")
+  //console.log(".startPolling: started polling")
   //console.log(this.timerID);
 };
 
@@ -48,21 +48,21 @@ ScheduleSchema.methods.startPolling = function startPolling(){
 // -set dataPollingState to false
 // -clearInterval to stop the polling
 ScheduleSchema.methods.pollEwon = function pollEwon(){
-  console.log(".pollEwon: running")
+  //console.log(".pollEwon: running")
   var self = this;
   Schedule.findOne( { user: self.user, dataAddress: self.dataAddress }, 'dataPollingStateReq timerID', function(err, schedule){
 
       if (err) console.log('.pollEwon: could not find user: Jason.  Error: ' + err);
       else{
         if (schedule.dataPollingStateReq === true){
-          console.log(".pollEwon: calling readEwonOnce")
+          //console.log(".pollEwon: calling readEwonOnce")
           // self.readEwonOnce();
           self.readMockOnce();
         }
         else {
           clearInterval(self.timerID); // shut down the polling
           Schedule.findOneAndUpdate( { user: 'Jason' }, { dataPollingState: false }, { new: false }, function(err, schedule){ // set the flag in the database that polling has stopped
-            console.log(".pollEwon: server polling stopped");
+            //console.log(".pollEwon: server polling stopped");
           });
         }
       };
@@ -72,11 +72,11 @@ ScheduleSchema.methods.pollEwon = function pollEwon(){
 // this method added after eWON free access expired
 // call to generate one simulated data point, save to DB and execute callback (response)
 ScheduleSchema.methods.readMockOnce = function readMockOnce(callback){ // callback is executed at end
-  console.log('starting readMockOnce');
+  //console.log('starting readMockOnce');
   var self = this;  // used for saving timerID
   Schedule.findOne( { user: 'Jason' }, function(err, schedule){ // get the previous reading
     if (err){
-      console.log('error reading DB: ' + err);
+      //console.log('error reading DB: ' + err);
       return (err);
     } else { // calculate the new value to store and return
       var clock = new Date();
@@ -116,9 +116,9 @@ ScheduleSchema.methods.readMockOnce = function readMockOnce(callback){ // callba
         new: true // return the updated document
       }, function(err, schedule){ // after write, database returns schedule
           if (err){
-            console.log('could not find user: Jason.  Error: ' + err);
+            //console.log('could not find user: Jason.  Error: ' + err);
           } else {
-            console.log('mock data saved');
+            //console.log('mock data saved');
             if (callback){ //if a callback was provided, use it, will be 'response'
               schedule.data = schedule.data.reverse();
               callback.send({data: schedule.data.slice(0, 10), dataPollingStateReq: schedule.dataPollingStateReq, dataPollingState: schedule.dataPollingState, dataPollRate: schedule.dataPollRate});
