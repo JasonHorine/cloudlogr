@@ -52,6 +52,9 @@ input.short{
   display: block;
   /*margin: 10px auto;*/
 }
+input[type=submit]{
+  margin-bottom: 3px;
+}
 .button_link{
   display: inline-block;
   color: black;
